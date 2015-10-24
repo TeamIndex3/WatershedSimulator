@@ -6,7 +6,6 @@ Guide:
 	Open /Assets/BaseScene.unity either by double clicking in Explorer / Fider or loading it from the "Open Scene" menu in Unity
 	Press the "Run" triangle (play button looking thingy) at the top center of the Unity scene window
 	Press the "Pause" button next to the "Run" triangle to inspect the scene. Mouse wheel will move the camera in and out, and holding "Alt" or "Command" will cause a click and drag to pan the camera
-
 	The current functionality procedurally creates a mesh from a *.TIN file (A common GIS file which is composed of triangles creating a surface - see http://www.xmswiki.com/wiki/TIN_Files for a breakdown of the file type). It applies a rigidbody, a texture/material, a non-kinematic physics model to the mesh and then drops a (currently, non procedural) ball on the mesh. 
 
 Our final project would include the following:

@@ -2,7 +2,6 @@
 
 Guide:
 	Install Unity 5 Personal from http://unity3d.com/get-unity
-
 	Open Unity
 	Open /Assets/BaseScene.unity either by double clicking in Explorer / Fider or loading it from the "Open Scene" menu in Unity
 	Press the "Run" triangle (play button looking thingy) at the top center of the Unity scene window

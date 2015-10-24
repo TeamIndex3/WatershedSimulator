@@ -1,0 +1,17 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CreateMesh.cs">
+    <Files>
+      <File FileName="Assets\CreateMesh.cs" Line="121" Column="36" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="X:\School\CIS422\WatershedSimulator\PNG2Mesh\Assets\TinToMesh.cs" line="51" />
+      <Breakpoint file="X:\School\CIS422\WatershedSimulator\PNG2Mesh\Assets\MeshFromTin.cs" line="270" />
+      <Breakpoint file="X:\School\CIS422\WatershedSimulator\PNG2Mesh\Assets\CreateMesh.cs" line="165" />
+      <Breakpoint file="X:\School\CIS422\WatershedSimulator\PNG2Mesh\Assets\CreateMesh.cs" line="143" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

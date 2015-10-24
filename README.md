@@ -25,6 +25,6 @@ Cool stuff this project includes:
 	We can apply textures to the environment based on height 
 	It looks pretty
 	It is a surprisingly useful tool for Geographers
-	If we create a TIN from a raster, that would be a super cool mathy thing to do
+	If we create a TIN from a raster, that would be a super cool mathy thing to do - see http://www.asprs.org/a/publications/pers/2005journal/august/2005_aug_917-926.pdf
 	Determining how many spheres we can render at once is a ridiculously interesting computational problem
 

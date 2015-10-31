@@ -13,6 +13,7 @@ public class CreateMesh : MonoBehaviour {
 
 	public Mesh MeshSetup (string fileName)
 	{
+		// Begin parsing TIN file
 		string line;
 		// Read the file and display it line by line.
 		System.IO.StreamReader file = new System.IO.StreamReader(fileName);
@@ -136,11 +137,18 @@ public class CreateMesh : MonoBehaviour {
 			triangles[i*3 + 2] = tempZInt-1;
 		}
 		file.Close();
-		
+		// Done parsing TIN file
+
+
+		// Create the mesh from the data included in TIN file.
+		// Create empty Mesh
 		Mesh mesh = new Mesh();
+		// Set vertices and triangles
 		mesh.vertices = vertices;
 		mesh.triangles = triangles;
+		// Recalculate normals so the renderer makes things pretty
 		mesh.RecalculateNormals ();
+		// Apply UV texture mapping 
 		//Vector2[] UV = new Vector2[] {new Vector2(0,256),new Vector2(256,256),new Vector2(256,0),new Vector2(0,0)};
 		//mesh.uv = UV;
 		return mesh;

@@ -54,12 +54,14 @@ public class Rain : MonoBehaviour {
 		}
 		// Create a non-rotated Quaternion matrix to be used in drop instantiation.
 		Quaternion identity = Quaternion.identity;
+		Vector3 origin = new Vector3 (0, 0, 0);
 		// Allocate the array which holds the available rain drops.
 		drops = new GameObject[numDrops];
 		// Populate the array with instances of rain drops, each located slightly above the next.
 		for (int i = 0; i < numDrops; i++) {
 			location = new Vector3(centerX,centerY+i,centerZ);
-			currentDrop = Instantiate (dropPrefab,location,identity) as GameObject;
+			currentDrop = Instantiate (dropPrefab,origin,identity) as GameObject;
+			currentDrop.transform.position = location;
 			drops[i] = currentDrop;
 		}
 	}

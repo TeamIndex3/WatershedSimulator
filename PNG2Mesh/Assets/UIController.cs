@@ -20,4 +20,9 @@ public class UIController : MonoBehaviour {
 			gui.gameObject.SetActive (show);
 		}
 	}
+
+	public void Exit()
+	{
+		Application.Quit ();
+	}
 }

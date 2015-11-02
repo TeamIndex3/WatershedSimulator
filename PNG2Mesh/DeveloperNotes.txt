@@ -1,0 +1,14 @@
+Rain Physics:
+	A rain particle falls at the speed of gravity.
+	A rain particle has an initial size, and a maximum size. 
+	Rain particles that touch eachother will combine, with the larger particle absorbing the smaller particle.
+	Two particles of the same size will combine with an arbitrary tie breaking algorithm (prefab name) - this prevents a collision from forming 2 particles of double size.
+	Two particles that would potentially combine and exceed the maximum size will not combine. This prevents comically large particles from forming.
+	Particles that are at rest will be absorbed into the ground at a slow rate.
+	Rain particles have very low friction and drag.
+	Rain is dropped from a grid showerhead which is arranged as rows and columns, and can be positioned independently on the x and z axes. The implementation of this is a full 3 tier m,n-ary tree which has a pseudo-random rain generation algorithm. The root of this tree is called when there are drops in the available drops pool, on a timer. The root has as many children as there are rows defined in the GUI, and each row has as many children as there are columns defined in the GUI. Each node has a parent pointer, a Vector3 location, an array of child pointers, and a get next random child function. This is meant to cause the rain to drop at random, regular intervals. Drops are added to the grid on a regular basis, and they traverse the tree until they hit a leaf node. There, they are assigned a yield return new waitforseconds() for a small random time frame, after which they will become rendered and have physics applied to them.
+
+Surface Physics:
+	Drops that fall off of the main surface will be counted as runoff and will be removed from view.
+
+

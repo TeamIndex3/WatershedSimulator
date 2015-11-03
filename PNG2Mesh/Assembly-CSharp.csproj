@@ -48,6 +48,7 @@
      <Compile Include="Assets\CreateMesh.cs" />
      <Compile Include="Assets\Drop.cs" />
      <Compile Include="Assets\ExitButtonHandler.cs" />
+     <Compile Include="Assets\ImportRaster.cs" />
      <Compile Include="Assets\Rain.cs" />
      <Compile Include="Assets\RainGridController.cs" />
      <Compile Include="Assets\RainGridNode.cs" />

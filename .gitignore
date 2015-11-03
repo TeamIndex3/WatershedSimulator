@@ -4,34 +4,34 @@
 # =============== #
 # Unity generated #
 # =============== #
-[Tt]emp/
-[Oo]bj/
-[Bb]uild
-[Ll]ibrary/
-sysinfo.txt
-*.stackdump
+PNG2Mesh/[Tt]emp/
+PNG2Mesh/[Oo]bj/
+PNG2Mesh/[Bb]uild
+PNG2Mesh/[Ll]ibrary/
+PNG2Mesh/sysinfo.txt
+PNG2Mesh/*.stackdump
  
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
-[Ee]xported[Oo]bj/
-.vs/
-/*.userprefs
-/*.csproj
-/*.pidb
-/*.suo
-/*.sln*
-/*.user
-/*.unityproj
-/*.booproj
+PNG2Mesh/[Ee]xported[Oo]bj/
+PNG2Mesh/.vs/
+PNG2Mesh/*.userprefs
+PNG2Mesh/*.csproj
+PNG2Mesh/*.pidb
+PNG2Mesh/*.suo
+PNG2Mesh/*.sln*
+PNG2Mesh/*.user
+PNG2Mesh/*.unityproj
+PNG2Mesh/*.booproj
  
 # ============ #
 # OS generated #
 # ============ #
-.DS_Store*
-._*
-.Spotlight-V100
-.Trashes
-Icon?
-ehthumbs.db
-[Tt]humbs.db
+PNG2Mesh/.DS_Store*
+PNG2Mesh/._*
+PNG2Mesh/.Spotlight-V100
+PNG2Mesh/.Trashes
+PNG2Mesh/Icon?
+PNG2Mesh/ehthumbs.db
+PNG2Mesh/[Tt]humbs.db

@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+Watershed Simulator Rain Controller
+Author: Max Kohl 
+Contributors in alphabetic order by last name:
+        Abdulmajeed Kadi, Garrett Morrison, Hannah Smith, Joshua Yang
+*/
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,28 +16,35 @@ public class RainGridController : MonoBehaviour {
 	// Some of these are required to be populated for this script to run.
 
 	// REQUIRED:
+	public RainGridNode root;
+	public GameObject dropPrefab;
+	public int maxNumDrops;
 	public int numDrops;
 	public int numRows;
 	public int numCols;
-	public GameObject dropPrefab;
 	public float centerX;
 	public float centerY;
 	public float centerZ;
 	public float scaleX;
 	public float scaleY;
 	public float frequency;
-	public RainGridNode root;
-
-	// Optional:
 	public float lengthX;
 	public float lengthY;
 	public float height;
+	public int numDropsAvailable;
+	public Seed seed;
+	public int maxTimeBetweenDrops;
+	public Queue<GameObject> availableDrops;
 
 	// Private data members - Not available to the Inspector
 	private Vector3 location;
 	private GameObject[] drops;
 	private GameObject currentDrop;
-	private Queue<GameObject> q;
+	private float dropCreationDelaySeconds = 1;
+	private int numDropsPerCreationCycle = 10;
+	private Quaternion identity;
+	private Vector3 origin;
+	private GameObject dropPointer;
 
 	// Every MonoBehavior has a Start function which is called upon instantiation into the Scene / Hierarchy
 	void Start () {
@@ -51,22 +65,61 @@ public class RainGridController : MonoBehaviour {
 		// Create the rain drop pool.
 		//CreatePool ();
 		*/
+		origin = new Vector3 (0, 0, 0);
+		identity = Quaternion.identity;
+		seed = new Seed ();
+		numDropsAvailable = 0;
+		availableDrops = new Queue<GameObject>();
 		int numRows = 5;
 		int numCols = 3;
 		root = (RainGridNode)ScriptableObject.CreateInstance("RainGridNode");
 		root.Init (location);
-		root.CreateTree (null, numRows, numCols);
-		
+		root.CreateTree (this, null, numRows, numCols);
+		StartCoroutine (PopulateDrops());
 		// Implied: Gravity is included in the drop prefab - Rain will begin with the instantion of this script.
 	}
-	
+
+	private IEnumerator PopulateDrops()
+	{
+		while (numDrops < maxNumDrops) {
+			for (int i = 0; i < numDropsPerCreationCycle; i++)
+			{
+				dropPointer = Instantiate (dropPrefab,origin,identity) as GameObject;
+				availableDrops.Enqueue (dropPointer);
+				numDropsAvailable++;
+				numDrops++;
+			}
+			yield return new WaitForSeconds (dropCreationDelaySeconds);
+		}
+	}
+
+	public void RemoveDropFromQueue(Vector3 location)
+	{
+		if (numDropsAvailable > 0)
+		{
+			float delay = seed.GetValueAsPercent() * maxTimeBetweenDrops;
+			GameObject drop = availableDrops.Dequeue ();
+			numDropsAvailable--;
+			drop.transform.position = location;
+			StartCoroutine (BeginDropping(drop, delay));
+		}
+	}
+
+	private IEnumerator BeginDropping(GameObject drop, float delay)
+	{
+		yield return new WaitForSeconds (delay);
+		Debug.LogError ("Drop it like it's hot!");
+		//drop.GetComponent<Drop> ().Enable ();
+		//drop.Enable ();
+	}
+
 	// Update is called once per frame
 	void Update () {
 		
 	}
 
 	// This creates a pool of Rain Drop objects.
-	void CreatePool()
+	private void CreatePool()
 	{
 		// Make sure there is something defined in this script's inspector's dropPrefab slot 
 		if (dropPrefab == null) {
@@ -88,6 +141,7 @@ public class RainGridController : MonoBehaviour {
 
 	public void AddToQueue(GameObject drop)
 	{
-		q.Enqueue (drop);
+		this.availableDrops.Enqueue (drop);
+		numDropsAvailable ++;
 	}
 }

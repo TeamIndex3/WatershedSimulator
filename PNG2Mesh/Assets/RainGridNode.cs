@@ -3,6 +3,7 @@ using System.Collections;
 
 public class RainGridNode : ScriptableObject {
 
+	public RainGridController grid;
 	public RainGridNode parent;
 	public RainGridNode[] children;
 	public int numChildren;
@@ -29,8 +30,9 @@ public class RainGridNode : ScriptableObject {
 	
 	}
 
-	public void CreateTree(RainGridNode parent, int numRows, int numCols)
+	public void CreateTree(RainGridController grid, RainGridNode parent, int numRows, int numCols)
 	{
+		this.grid = grid;
 		this.parent = parent;
 		numChildren = numRows;
 		RainGridNode temp = null;
@@ -38,8 +40,17 @@ public class RainGridNode : ScriptableObject {
 		for (int i = 0; i < numChildren; i++){
 			temp = (RainGridNode)ScriptableObject.CreateInstance ("RainGridNode");
 			//temp.Init();
-			temp.CreateTree(this,numCols,0);
+			temp.CreateTree(grid,this,numCols,0);
 			children[i] = temp;
+		}
+	}
+
+	public void Dispense()
+	{
+		if (numChildren == 0) {
+			DropRain ();
+		} else {
+			children[GetNextChild()].Dispense();
 		}
 	}
 
@@ -50,16 +61,12 @@ public class RainGridNode : ScriptableObject {
 
 	private int GetNextChild()
 	{
-		return 0;
+		return grid.seed.GetValueAsInt(0,numChildren);
 	}
 
 	public void NextChild()
 	{
-		if (numChildren == 0) {
-			DropRain ();
-		} else {
-			children[GetNextChild()].NextChild();
-		}
+
 	}
 
 	private void DropRain()
@@ -69,6 +76,9 @@ public class RainGridNode : ScriptableObject {
 		// give it a yield return new waitforseconds that is random
 		// reduce the availabledrop counter;
 		// Then enable the drop.
+		if (grid.numDropsAvailable > 0) {
+			grid.RemoveDropFromQueue(location);
+		}
 		Debug.LogError ("Dropping drop at location " + location[0] + "," + location[1] + "," + location[2]);
 	}
 }

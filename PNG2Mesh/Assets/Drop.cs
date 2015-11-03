@@ -12,14 +12,20 @@ public class Drop : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		this.colliding = false;
-		this.body = GetComponent<Rigidbody>();
-		this.r = GetComponent<MeshRenderer>();
+		//this.body = GetComponent<Rigidbody>();
+		//this.r = GetComponent<MeshRenderer>();
 		//grid = GetComponent<RainGridController> ();
 		/*if (grid == null) {
 			Debug.LogError ("NO GRID!");
 		}*/
 	}
-	
+
+	void Awake()
+	{
+		grid = GameObject.Find ("RainGrid");
+	}
+
+
 	// Update is called once per frame
 	void Update () {
 		
@@ -32,16 +38,25 @@ public class Drop : MonoBehaviour {
 		this.body.detectCollisions = true;
 		this.body.useGravity = true;
 		this.r.GetComponentInParent<Renderer>().enabled = true;
+		// Instead, try 
+		// this.gameObject.SetActive(true);
 	}
 
-	private void Disable()
+	public void Disable()
 	{
 		// Turn off all physics and rendering for this drop and add it to the available drop queue.
 		this.body.isKinematic = true;
 		this.body.detectCollisions = false;
 		this.body.useGravity = false;
-		this.r.GetComponentInParent<Renderer>().enabled = false;
-		// q.AddToQueue(this.gameObject);
+		this.r.GetComponentInParent<Renderer> ().enabled = false;
+		// Instead, try 
+		// this.gameObject.SetActive(false);
+		if (grid == null) {
+			Debug.LogError ("Null grid, try it again!");
+			grid = GameObject.Find("RainGrid");
+		}
+		var controller = grid.GetComponent<RainGridController> ();
+		controller.AddToQueue (this.gameObject);
 	}
 
 	void OnCollisionEnter(Collision collision)

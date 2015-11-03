@@ -6,7 +6,8 @@ using System.Collections.Generic;
 public class RainGridController : MonoBehaviour {
 
 	// Public data members - can be modified from the inspector. 
-	//Some of these are required to be populated for this script to run.
+	// Some of these are required to be populated for this script to run.
+
 	// REQUIRED:
 	public int numDrops;
 	public int numRows;
@@ -18,11 +19,13 @@ public class RainGridController : MonoBehaviour {
 	public float scaleX;
 	public float scaleY;
 	public float frequency;
+	public RainGridNode root;
 
 	// Optional:
 	public float lengthX;
 	public float lengthY;
 	public float height;
+
 	// Private data members - Not available to the Inspector
 	private Vector3 location;
 	private GameObject[] drops;
@@ -31,7 +34,8 @@ public class RainGridController : MonoBehaviour {
 
 	// Every MonoBehavior has a Start function which is called upon instantiation into the Scene / Hierarchy
 	void Start () {
-		// Make sure a value is defined in the numDrops location in the inspector for this object
+		/*
+		 * // Make sure a value is defined in the numDrops location in the inspector for this object
 		if (numDrops == 0 || numDrops == null) {
 			numDrops = 10;
 		}
@@ -46,7 +50,13 @@ public class RainGridController : MonoBehaviour {
 		this.gameObject.transform.position = location;
 		// Create the rain drop pool.
 		//CreatePool ();
-
+		*/
+		int numRows = 5;
+		int numCols = 3;
+		root = (RainGridNode)ScriptableObject.CreateInstance("RainGridNode");
+		root.Init (location);
+		root.CreateTree (null, numRows, numCols);
+		
 		// Implied: Gravity is included in the drop prefab - Rain will begin with the instantion of this script.
 	}
 	

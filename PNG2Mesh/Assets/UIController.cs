@@ -8,7 +8,7 @@ public class UIController : MonoBehaviour {
 	private bool show = false;
 	// Use this for initialization
 	void Start () {
-	
+		
 	}
 	
 	// Update is called once per frame

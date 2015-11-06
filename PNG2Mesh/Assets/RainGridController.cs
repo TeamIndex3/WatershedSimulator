@@ -51,7 +51,7 @@ public class RainGridController : MonoBehaviour {
 	private GameObject[] drops;
 	private GameObject currentDrop;
 	private float dropCreationDelaySeconds = 1;
-	private int numDropsPerCreationCycle = 10;
+	private int numDropsPerCreationCycle = 100;
 	private Quaternion identity;
 	private Vector3 origin;
 	private GameObject dropPointer;

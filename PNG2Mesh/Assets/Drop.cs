@@ -32,12 +32,12 @@ public class Drop : MonoBehaviour {
 	public void Enable()
 	{
 		// Turn all physics and rendering on for this drop.
-		this.body.isKinematic = false;
+		/*this.body.isKinematic = false;
 		this.body.detectCollisions = true;
 		this.body.useGravity = true;
-		this.r.GetComponentInParent<Renderer>().enabled = true;
+		this.r.GetComponentInParent<Renderer>().enabled = true;*/
 		// Instead, try 
-		// this.gameObject.SetActive(true);
+		this.gameObject.SetActive(true);
 	}
 
 	void LateUpdate()
@@ -70,12 +70,12 @@ public class Drop : MonoBehaviour {
 	public void Disable()
 	{
 		// Turn off all physics and rendering for this drop and add it to the available drop queue.
-		this.body.isKinematic = true;
+		/*this.body.isKinematic = true;
 		this.body.detectCollisions = false;
 		this.body.useGravity = false;
-		this.r.GetComponentInParent<Renderer> ().enabled = false;
+		this.r.GetComponentInParent<Renderer> ().enabled = false;*/
 		// Instead, try 
-		// this.gameObject.SetActive(false);
+		this.gameObject.SetActive(false);
 		if (grid == null) {
 			Debug.LogError ("Null grid, try it again!");
 			grid = GameObject.Find("RainGrid");

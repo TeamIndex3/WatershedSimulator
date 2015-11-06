@@ -37,9 +37,30 @@ public class RainGridNode : ScriptableObject {
 		numChildren = numRows;
 		RainGridNode temp = null;
 		children = new RainGridNode[numChildren];
+		float tempZFloat = grid.startZ;
+		float tempXFloat = grid.startX;
+		Vector3 tempLocation;
 		for (int i = 0; i < numChildren; i++){
 			temp = (RainGridNode)ScriptableObject.CreateInstance ("RainGridNode");
-			temp.Init (location);
+			if (this.parent == null)
+			{
+				temp.Init (location);
+			}
+			else if (this.parent.parent == null)
+			{
+				//tempZFloat += grid.zStep;
+				// Assume this is a direct child of the root. Update z steps
+				tempLocation = new Vector3(location[0],location[1],tempZFloat + i*grid.xStep);
+				temp.Init (tempLocation);
+			}
+			else
+			{
+				//tempXFloat += grid.xStep;
+				// Assume this is a direct child of the root. Update z steps
+				tempLocation = new Vector3(tempXFloat + i*grid.xStep,location[1],location[2]);
+				temp.Init (tempLocation);
+			}
+			//temp.Init (location);
 			temp.CreateTree(grid,this,numCols,0);
 			children[i] = temp;
 		}
@@ -77,7 +98,9 @@ public class RainGridNode : ScriptableObject {
 		// reduce the availabledrop counter;
 		// Then enable the drop.
 		if (grid.numDropsAvailable > 0) {
-			grid.RemoveDropFromQueue(location);
+			float tempx = (location[0] - grid.xStep) + (grid.xStep * grid.seed.GetValueAsPercent());
+			float tempz = (location[2] - grid.zStep) + (grid.zStep * grid.seed.GetValueAsPercent());
+			grid.RemoveDropFromQueue(new Vector3(tempx,location[1],tempz));
 		}
 		Debug.LogError ("Dropping drop at location " + location[0] + "," + location[1] + "," + location[2]);
 	}

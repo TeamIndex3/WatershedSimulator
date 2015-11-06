@@ -23,21 +23,28 @@ public class RainGridController : MonoBehaviour {
 	public GameObject IntensitySlider;
 	public int maxNumDrops;
 	public int numDrops;
-	public int numRows;
-	public int numCols;
+	public int numZSteps;
+	public int numXSteps;
 	public float centerX;
 	public float centerY;
 	public float centerZ;
 	public float scaleX;
-	public float scaleY;
+	public float scaleZ;
 	public float frequency;
 	public float lengthX;
-	public float lengthY;
+	public float lengthZ;
 	public float height;
 	public int numDropsAvailable;
 	public Seed seed;
 	public float maxTimeBetweenDrops;
 	public Queue<GameObject> availableDrops;
+	public GameObject surface;
+	public float startX;
+	//public float endX;
+	public float startZ;
+	//public float endZ;
+	public float xStep;
+	public float zStep;
 
 	// Private data members - Not available to the Inspector
 	private Vector3 location;
@@ -59,8 +66,6 @@ public class RainGridController : MonoBehaviour {
 		on = onSwitch.GetComponent<Toggle> ();
 		intensity = IntensitySlider.GetComponent<Slider> ();
 
-		int numRows = 5;
-		int numCols = 3;
 		// Initialize the random number generator
 		// Use any integer seed value to track your procedural rainfall
 		seed = new Seed ();
@@ -76,7 +81,7 @@ public class RainGridController : MonoBehaviour {
 		root.Init (location);
 		// Recursively create the showerhead tree with a pointer to the following objects:
 		// This class, a null parent, and the dimensions of the tree.
-		root.CreateTree (this, null, numRows, numCols);
+		root.CreateTree (this, null, numZSteps, numXSteps);
 		// Now prime the pump by adding drops to the available drops queue
 		StartCoroutine (PopulateDrops());
 		// And now start dropping them on a regular timer
@@ -84,6 +89,49 @@ public class RainGridController : MonoBehaviour {
 		// Implied: Gravity is included in the drop prefab - Rain will begin with the instantion of this script.
 	}
 
+	void Awake()
+	{
+		
+		GetDimensions ();
+	}
+
+	void GetDimensions()
+	{
+
+		var bounds = surface.GetComponentsInChildren<MeshRenderer> ();
+		float minX = 0.0f;
+		float maxX = 0.0f;
+		float minZ = 0.0f;
+		float maxZ = 0.0f;
+		bool updated = false;
+		foreach (MeshRenderer mesh in bounds) {
+			if (updated)
+			{
+				minZ = Mathf.Min (minZ,mesh.bounds.extents.z);
+				maxZ = Mathf.Max (maxZ,mesh.bounds.extents.z);
+				minX = Mathf.Min (minX,mesh.bounds.extents.x);
+				maxX = Mathf.Max (maxX,mesh.bounds.extents.x);
+			}
+			else
+			{
+				minZ = mesh.bounds.extents.z;
+				maxZ = mesh.bounds.extents.z;
+				minX = mesh.bounds.extents.x;
+				maxX = mesh.bounds.extents.x;
+				updated = true;
+			}
+		}
+		lengthX = scaleX*(maxX - minX);
+		lengthZ = scaleZ*(maxZ - minZ);
+		startX = centerX - (lengthX / 2);
+		float endX = centerX + (lengthX / 2);
+		startZ = centerZ - (lengthZ / 2);
+		float endZ = centerZ + (lengthZ / 2);
+		xStep = lengthX / numXSteps;
+		zStep = lengthZ / numZSteps;
+	}
+
+	// GUI input handler functions
 	public void HandleSwitch()
 	{
 		if (on == null) {

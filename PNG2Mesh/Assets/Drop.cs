@@ -8,6 +8,8 @@ public class Drop : MonoBehaviour {
 	public MeshRenderer r;
 	public GameObject grid;
 	public float maxMass;
+	public Vector3 velocityVector;
+	public float maxVelocity = 19.6f;
 
 	// Use this for initialization
 	void Start () {
@@ -26,10 +28,6 @@ public class Drop : MonoBehaviour {
 	}
 
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 	public void Enable()
 	{
@@ -40,6 +38,33 @@ public class Drop : MonoBehaviour {
 		this.r.GetComponentInParent<Renderer>().enabled = true;
 		// Instead, try 
 		// this.gameObject.SetActive(true);
+	}
+
+	void LateUpdate()
+	{
+		bool doUpdate = false;
+		if (Mathf.Abs (body.velocity [0]) > maxVelocity) {
+			velocityVector = new Vector3 (maxVelocity, body.velocity[1], body.velocity[2]);
+			doUpdate = true;
+		}
+		if (body.velocity [1] > maxVelocity/2) {
+			velocityVector = new Vector3 (body.velocity [0],maxVelocity/3, body.velocity[2]);
+			doUpdate = true;
+		}
+		if (Mathf.Abs (body.velocity [2]) > maxVelocity) {
+			velocityVector = new Vector3 (body.velocity [0], body.velocity[1], maxVelocity);
+			doUpdate = true;
+		}
+		if (doUpdate) {
+			body.velocity = velocityVector;
+		}
+	}
+
+	void Update()
+	{
+		
+		//velocityVector = new Vector3 (body.velocity [0], 0, body.velocity [2]);
+		//body.velocity = velocityVector;
 	}
 
 	public void Disable()
@@ -140,8 +165,14 @@ public class Drop : MonoBehaviour {
 				//Debug.LogError("Drop disappeared!");
 				Disable ();
 			}
+			
+			//velocityVector = new Vector3 (body.velocity [0], 0, body.velocity [2]);
+			//velocityVector = new Vector3 (0, 0,0);
+			//body.velocity = velocityVector;
 		}
 		// Free up this object for the next collision
+
+		//body.velocity [1] = 0.0;
 		this.colliding = false;
 	}
 }

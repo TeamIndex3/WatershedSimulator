@@ -85,6 +85,7 @@ public class RainGridController : MonoBehaviour {
 			for (int i = 0; i < numDropsPerCreationCycle; i++)
 			{
 				dropPointer = Instantiate (dropPrefab,origin,identity) as GameObject;
+				dropPointer.GetComponent<Drop>().Disable ();
 				availableDrops.Enqueue (dropPointer);
 				numDropsAvailable++;
 				numDrops++;
@@ -98,8 +99,8 @@ public class RainGridController : MonoBehaviour {
 		if (numDropsAvailable > 0)
 		{
 			float delay = seed.GetValueAsPercent() * maxTimeBetweenDrops;
-			GameObject drop = availableDrops.Dequeue ();
 			numDropsAvailable--;
+			GameObject drop = availableDrops.Dequeue ();
 			drop.transform.position = location;
 			StartCoroutine (BeginDropping(drop, delay));
 		}
@@ -109,7 +110,7 @@ public class RainGridController : MonoBehaviour {
 	{
 		yield return new WaitForSeconds (delay);
 		Debug.LogError ("Drop it like it's hot!");
-		//drop.GetComponent<Drop> ().Enable ();
+		drop.GetComponent<Drop> ().Enable ();
 		//drop.Enable ();
 	}
 

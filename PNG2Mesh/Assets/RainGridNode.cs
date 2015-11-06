@@ -39,7 +39,7 @@ public class RainGridNode : ScriptableObject {
 		children = new RainGridNode[numChildren];
 		for (int i = 0; i < numChildren; i++){
 			temp = (RainGridNode)ScriptableObject.CreateInstance ("RainGridNode");
-			//temp.Init();
+			temp.Init (location);
 			temp.CreateTree(grid,this,numCols,0);
 			children[i] = temp;
 		}
@@ -56,7 +56,7 @@ public class RainGridNode : ScriptableObject {
 
 	public void Init(Vector3 loc)
 	{
-		location = loc;
+		this.location = loc;
 	}
 
 	private int GetNextChild()

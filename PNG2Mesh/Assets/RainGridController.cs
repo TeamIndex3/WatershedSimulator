@@ -6,6 +6,7 @@ Contributors in alphabetic order by last name:
 */
 
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -18,6 +19,8 @@ public class RainGridController : MonoBehaviour {
 	// REQUIRED:
 	public RainGridNode root;
 	public GameObject dropPrefab;
+	public GameObject onSwitch;
+	public GameObject IntensitySlider;
 	public int maxNumDrops;
 	public int numDrops;
 	public int numRows;
@@ -33,7 +36,7 @@ public class RainGridController : MonoBehaviour {
 	public float height;
 	public int numDropsAvailable;
 	public Seed seed;
-	public int maxTimeBetweenDrops;
+	public float maxTimeBetweenDrops;
 	public Queue<GameObject> availableDrops;
 
 	// Private data members - Not available to the Inspector
@@ -45,38 +48,75 @@ public class RainGridController : MonoBehaviour {
 	private Quaternion identity;
 	private Vector3 origin;
 	private GameObject dropPointer;
+	private Toggle on;
+	private Slider intensity;
 
 	// Every MonoBehavior has a Start function which is called upon instantiation into the Scene / Hierarchy
 	void Start () {
-		/*
-		 * // Make sure a value is defined in the numDrops location in the inspector for this object
-		if (numDrops == 0 || numDrops == null) {
-			numDrops = 10;
+		// Set class specific constants
+		origin = new Vector3 (0, 0, 0);
+		identity = Quaternion.identity;
+		on = onSwitch.GetComponent<Toggle> ();
+		intensity = IntensitySlider.GetComponent<Slider> ();
+
+		int numRows = 5;
+		int numCols = 3;
+		// Initialize the random number generator
+		// Use any integer seed value to track your procedural rainfall
+		seed = new Seed ();
+		// Initialize drop pool and living drop counter. 
+		// Ideally numDropsAvailable will track how many drops have not been processed into rain.
+		// This should end up being slightly less than or equal to the current size of the Queue in any given frame.
+		availableDrops = new Queue<GameObject>();
+		numDropsAvailable = 0;
+		// Create the root node of the showerhead tree
+		root = (RainGridNode)ScriptableObject.CreateInstance("RainGridNode");
+		// Give it a base location Vector3 (the center point of the rain grid)
+		location = new Vector3 (centerX, centerY, centerZ);
+		root.Init (location);
+		// Recursively create the showerhead tree with a pointer to the following objects:
+		// This class, a null parent, and the dimensions of the tree.
+		root.CreateTree (this, null, numRows, numCols);
+		// Now prime the pump by adding drops to the available drops queue
+		StartCoroutine (PopulateDrops());
+		// And now start dropping them on a regular timer
+		StartCoroutine (StartDropping ());
+		// Implied: Gravity is included in the drop prefab - Rain will begin with the instantion of this script.
+	}
+
+	public void HandleSwitch()
+	{
+		if (on == null) {
+			return;
 		}
-		// Make sure a default location is defined for this object in the inspector.
-		if (centerX == null || centerY == null || centerZ == null)
+		// All we care about is if the switch turns on
+		if (on.isOn) {
+			Debug.LogError("Turning rain on");
+			StartCoroutine(StartDropping ());
+		}
+	}
+	
+	public void HandleIntensity()
+	{
+		if (intensity == null)
 		{
 			return;
 		}
-		// Store the default location as a vector.
-		location = new Vector3(centerX, centerY, centerZ);
-		// Set this object's location to the default location provided
-		this.gameObject.transform.position = location;
-		// Create the rain drop pool.
-		//CreatePool ();
-		*/
-		origin = new Vector3 (0, 0, 0);
-		identity = Quaternion.identity;
-		seed = new Seed ();
-		numDropsAvailable = 0;
-		availableDrops = new Queue<GameObject>();
-		int numRows = 5;
-		int numCols = 3;
-		root = (RainGridNode)ScriptableObject.CreateInstance("RainGridNode");
-		root.Init (location);
-		root.CreateTree (this, null, numRows, numCols);
-		StartCoroutine (PopulateDrops());
-		// Implied: Gravity is included in the drop prefab - Rain will begin with the instantion of this script.
+		frequency = intensity.normalizedValue;
+	}
+
+	private IEnumerator StartDropping()
+	{	
+		frequency = intensity.normalizedValue;
+		// Only drop rain when the on switch is...on
+		while (on.isOn) {
+			// Invert the slider so that a frequency of 1 causes a very small amount of time to pass between dropping
+			float delay = (1 - Mathf.Max (0.0001f, frequency)) * (maxTimeBetweenDrops);
+			Debug.LogError ("Waiting " + delay + " seconds for the next drop");
+			root.Dispense ();
+			yield return new WaitForSeconds (delay);
+		}
+		Debug.LogError ("Turning rain off.");
 	}
 
 	private IEnumerator PopulateDrops()
@@ -109,7 +149,6 @@ public class RainGridController : MonoBehaviour {
 	private IEnumerator BeginDropping(GameObject drop, float delay)
 	{
 		yield return new WaitForSeconds (delay);
-		Debug.LogError ("Drop it like it's hot!");
 		drop.GetComponent<Drop> ().Enable ();
 		//drop.Enable ();
 	}
@@ -117,27 +156,6 @@ public class RainGridController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-	}
-
-	// This creates a pool of Rain Drop objects.
-	private void CreatePool()
-	{
-		// Make sure there is something defined in this script's inspector's dropPrefab slot 
-		if (dropPrefab == null) {
-			return;
-		}
-		// Create a non-rotated Quaternion matrix to be used in drop instantiation.
-		Quaternion identity = Quaternion.identity;
-		Vector3 origin = new Vector3 (0, 0, 0);
-		// Allocate the array which holds the available rain drops.
-		drops = new GameObject[numDrops];
-		// Populate the array with instances of rain drops, each located slightly above the next.
-		for (int i = 0; i < numDrops; i++) {
-			location = new Vector3(centerX,centerY+i,centerZ);
-			currentDrop = Instantiate (dropPrefab,origin,identity) as GameObject;
-			currentDrop.transform.position = location;
-			drops[i] = currentDrop;
-		}
 	}
 
 	public void AddToQueue(GameObject drop)

@@ -1,4 +1,8 @@
-﻿
+﻿/*
+ * Author: Dave Hampson
+ * This code is posted on the Unity community Wiki available at:
+ * http://wiki.unity3d.com/wiki/index.php?title=FramesPerSecond
+*/ 
 using UnityEngine;
 using System.Collections;
 

@@ -6,7 +6,7 @@ public class Seed {
 	private int current;
 	private int prev;
 	private int maxValue = (int)Mathf.Floor(System.Int32.MaxValue/2);
-	private int percentGranularity = 10000;
+	private float percentGranularity = 10000;
 	private int temp;
 	private bool busy;
 
@@ -47,7 +47,7 @@ public class Seed {
 	public float GetValueAsPercent()
 	{
 		IncrementSeed ();
-		return (current % percentGranularity) / percentGranularity;
+		return (float)(current % percentGranularity) / percentGranularity;
 	}
 
 	private void IncrementSeed()

@@ -160,7 +160,7 @@ public class RainGridController : MonoBehaviour {
 		while (on.isOn) {
 			// Invert the slider so that a frequency of 1 causes a very small amount of time to pass between dropping
 			float delay = (1 - Mathf.Max (0.0001f, frequency)) * (maxTimeBetweenDrops);
-			Debug.LogError ("Waiting " + delay + " seconds for the next drop");
+			//Debug.LogError ("Waiting " + delay + " seconds for the next drop");
 			root.Dispense ();
 			yield return new WaitForSeconds (delay);
 		}
@@ -169,13 +169,18 @@ public class RainGridController : MonoBehaviour {
 
 	private IEnumerator PopulateDrops()
 	{
+		Drop dropScript;
 		while (numDrops < maxNumDrops) {
 			for (int i = 0; i < numDropsPerCreationCycle; i++)
 			{
 				dropPointer = Instantiate (dropPrefab,origin,identity) as GameObject;
-				dropPointer.GetComponent<Drop>().Disable ();
-				availableDrops.Enqueue (dropPointer);
-				numDropsAvailable++;
+				dropScript = dropPointer.GetComponent<Drop>();
+				dropScript.ID = numDrops;
+				dropScript.Disable ();
+				// Drop is already added to queue in disable function - this was the cause of drops being double counted.
+				//AddToQueue (dropPointer);
+				//availableDrops.Enqueue (dropPointer);
+				//numDropsAvailable++;
 				numDrops++;
 			}
 			yield return new WaitForSeconds (dropCreationDelaySeconds);
@@ -184,7 +189,7 @@ public class RainGridController : MonoBehaviour {
 
 	public void RemoveDropFromQueue(Vector3 location)
 	{
-		if (numDropsAvailable > 0)
+		if (numDropsAvailable > 50)
 		{
 			float delay = seed.GetValueAsPercent() * maxTimeBetweenDrops;
 			numDropsAvailable--;

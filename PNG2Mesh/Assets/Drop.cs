@@ -10,10 +10,11 @@ public class Drop : MonoBehaviour {
 	public float maxMass;
 	public Vector3 velocityVector;
 	public float maxVelocity = 19.6f;
+	public RainGridController controller;
+	public int ID;
 
 	// Use this for initialization
 	void Start () {
-		this.colliding = false;
 		//this.body = GetComponent<Rigidbody>();
 		//this.r = GetComponent<MeshRenderer>();
 		//grid = GetComponent<RainGridController> ();
@@ -24,10 +25,11 @@ public class Drop : MonoBehaviour {
 
 	void Awake()
 	{
+		this.colliding = false;
 		grid = GameObject.Find ("RainGrid");
+		controller = grid.GetComponent<RainGridController> ();
+		ID = 0;
 	}
-
-
 
 	public void Enable()
 	{
@@ -42,17 +44,25 @@ public class Drop : MonoBehaviour {
 
 	void LateUpdate()
 	{
+		// Make sure we don't have any crazy bounces going on by limiting the rate at which drops can move
 		bool doUpdate = false;
-		if (Mathf.Abs (body.velocity [0]) > maxVelocity) {
-			velocityVector = new Vector3 (maxVelocity, body.velocity[1], body.velocity[2]);
+		float tempValue;
+		velocityVector = body.velocity;
+		tempValue = velocityVector.x;
+		if (Mathf.Abs (tempValue) > maxVelocity) {
+			tempValue = (tempValue > 0) ? maxVelocity:(-1)*maxVelocity;
+			velocityVector.x = tempValue;
 			doUpdate = true;
 		}
-		if (body.velocity [1] > maxVelocity/2) {
-			velocityVector = new Vector3 (body.velocity [0],maxVelocity/3, body.velocity[2]);
+		tempValue = velocityVector.y;
+		if (tempValue > maxVelocity/2) {
+			velocityVector.y = maxVelocity/2;
 			doUpdate = true;
 		}
-		if (Mathf.Abs (body.velocity [2]) > maxVelocity) {
-			velocityVector = new Vector3 (body.velocity [0], body.velocity[1], maxVelocity);
+		tempValue = velocityVector.z;
+		if (Mathf.Abs (tempValue) > maxVelocity) {
+			tempValue = (tempValue > 0) ? maxVelocity:(-1)*maxVelocity;
+			velocityVector.z = tempValue;
 			doUpdate = true;
 		}
 		if (doUpdate) {
@@ -80,7 +90,6 @@ public class Drop : MonoBehaviour {
 			Debug.LogError ("Null grid, try it again!");
 			grid = GameObject.Find("RainGrid");
 		}
-		var controller = grid.GetComponent<RainGridController> ();
 		controller.AddToQueue (this.gameObject);
 	}
 
@@ -92,39 +101,37 @@ public class Drop : MonoBehaviour {
 		}
 		// Don't allow any other collisions to be processed on this object while we are working on it
 		this.colliding = true;
-
-		// Most likely it is touching a surface, check that first
-		if (collision.collider is MeshCollider)
-		{
-			if (collision.gameObject.name == "BasePlane") 
-			{
-				// This drop has fallen off of the terrain, 
-				// Time to remove it from the scene and re-queue it as a new rain drop.
-
-				//Debug.LogError ("Drop has fallen off terrain!");
-				Disable ();
-			}
-			else
-			{
-				// It is just touching a normal surface - continue as usual and resume collision detection.
-				this.colliding = false;
-				return;
-			}
-		}
-		// Check to see if instead, we are touching another drop.
-		else if (collision.collider is SphereCollider) {
+		// Check to see if we are touching another drop.
+		if (collision.collider is SphereCollider) {
+			// We need their drop script
 			var thing = collision.gameObject.GetComponent<Drop>();
+			// Make sure they aren't busy too
 			if (thing.colliding == true)
 			{
 				this.colliding = false;
 				return;
 			}
+			// Don't process this if we can't combine in the first place
+			if (body.mass >= maxMass)
+			{
+				this.colliding = false;
+				return;
+			}
+			// Only now is it worth allocating the float that represents the other drop's mass, 
+			// since we know at least this has a valid mass
 			float m = collision.rigidbody.mass;
+			// Check if they are valid for combining
+			if (m >= maxMass)
+			{
+				this.colliding = false;
+				return;
+			}
 			// Break ties first - we don't want to let both objects grow and not get deleted.
 			if (m == this.body.mass)
 			{
 				// This is the easiest way to break ties since every clone of a prefab has a unique name
-				if (string.Compare (collision.gameObject.name,this.gameObject.name) >= 0)
+				// 
+				if (thing.ID <= this.ID)
 				{
 					// Make sure the resulting drop isn't "too big"
 					if (m + this.body.mass <= maxMass)
@@ -133,10 +140,10 @@ public class Drop : MonoBehaviour {
 						this.body.mass += m;
 						this.gameObject.transform.localScale += collision.transform.localScale;
 					}
-					/*else
-					{
-						Debug.LogError ("This drop would be too big!");
-					}*/
+					//else
+					//{
+					//	Debug.LogError ("This drop would be too big!");
+					//}
 				}
 				else if (m + this.body.mass <= maxMass)
 				{
@@ -153,10 +160,10 @@ public class Drop : MonoBehaviour {
 					this.body.mass += m;
 					this.gameObject.transform.localScale += collision.transform.localScale;
 				}
-				/*else
-				{
-					Debug.LogError ("This drop would be too big!");
-				}*/
+				//else
+				//{
+				//	Debug.LogError ("This drop would be too big!");
+				//}
 			}
 			else if (m + this.body.mass <= maxMass)
 			{
@@ -165,14 +172,8 @@ public class Drop : MonoBehaviour {
 				//Debug.LogError("Drop disappeared!");
 				Disable ();
 			}
-			
-			//velocityVector = new Vector3 (body.velocity [0], 0, body.velocity [2]);
-			//velocityVector = new Vector3 (0, 0,0);
-			//body.velocity = velocityVector;
 		}
 		// Free up this object for the next collision
-
-		//body.velocity [1] = 0.0;
 		this.colliding = false;
 	}
 }

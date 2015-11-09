@@ -44,21 +44,21 @@ public class RainGridNode : ScriptableObject {
 			temp = (RainGridNode)ScriptableObject.CreateInstance ("RainGridNode");
 			if (this.parent == null)
 			{
-				temp.Init (location);
-			}
-			else if (this.parent.parent == null)
-			{
 				//tempZFloat += grid.zStep;
 				// Assume this is a direct child of the root. Update z steps
 				tempLocation = new Vector3(location[0],location[1],tempZFloat + i*grid.xStep);
 				temp.Init (tempLocation);
 			}
-			else
+			else if (this.parent.parent == null)
 			{
 				//tempXFloat += grid.xStep;
 				// Assume this is a direct child of the root. Update z steps
 				tempLocation = new Vector3(tempXFloat + i*grid.xStep,location[1],location[2]);
 				temp.Init (tempLocation);
+			}
+			else
+			{
+				Debug.LogError ("Impossible case, this RainGridNode has no parent pointer AND no parent.parent pointer");
 			}
 			//temp.Init (location);
 			temp.CreateTree(grid,this,numCols,0);
@@ -85,11 +85,6 @@ public class RainGridNode : ScriptableObject {
 		return grid.seed.GetValueAsInt(0,numChildren);
 	}
 
-	public void NextChild()
-	{
-
-	}
-
 	private void DropRain()
 	{
 		// Take a drop from the pool, 
@@ -97,11 +92,14 @@ public class RainGridNode : ScriptableObject {
 		// give it a yield return new waitforseconds that is random
 		// reduce the availabledrop counter;
 		// Then enable the drop.
+		float percent, tempx, tempz;
 		if (grid.numDropsAvailable > 0) {
-			float tempx = (location[0] - grid.xStep) + (grid.xStep * grid.seed.GetValueAsPercent());
-			float tempz = (location[2] - grid.zStep) + (grid.zStep * grid.seed.GetValueAsPercent());
+			percent = grid.seed.GetValueAsPercent();
+			tempx = (location[0] - grid.xStep/2) + (grid.xStep * percent);
+			percent = grid.seed.GetValueAsPercent();
+			tempz = (location[2] - grid.zStep/2) + (grid.zStep * percent);
 			grid.RemoveDropFromQueue(new Vector3(tempx,location[1],tempz));
+			//Debug.LogError ("Dropping drop at location " + tempx + "," + location[1] + "," + tempz);
 		}
-		Debug.LogError ("Dropping drop at location " + location[0] + "," + location[1] + "," + location[2]);
 	}
 }

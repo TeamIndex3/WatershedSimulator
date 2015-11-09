@@ -174,6 +174,7 @@ public class RainGridController : MonoBehaviour {
 			for (int i = 0; i < numDropsPerCreationCycle; i++)
 			{
 				dropPointer = Instantiate (dropPrefab,origin,identity) as GameObject;
+				dropPointer.transform.parent = this.transform;
 				dropScript = dropPointer.GetComponent<Drop>();
 				dropScript.ID = numDrops;
 				dropScript.Disable ();

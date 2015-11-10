@@ -1,19 +1,20 @@
 # WatershedSimulator
 
-Guide:
-	Install Unity 5 Personal from http://unity3d.com/get-unity
+**Installation Guide:**<p>
+	Install <a href="http://unity3d.com/get-unity">Unity 5 Personal</a>
 	Open Unity
 	Open /Assets/BaseScene.unity either by double clicking in Explorer / Fider or loading it from the "Open Scene" menu in Unity
 	Press the "Run" triangle (play button looking thingy) at the top center of the Unity scene window
 	Press the "Pause" button next to the "Run" triangle to inspect the scene. Mouse wheel will move the camera in and out, and holding "Alt" or "Command" will cause a click and drag to pan the camera
-	The current functionality procedurally creates a mesh from a *.TIN file (A common GIS file which is composed of triangles creating a surface - see http://www.xmswiki.com/wiki/TIN_Files for a breakdown of the file type). It applies a rigidbody, a texture/material, a non-kinematic physics model to the mesh and then drops a (currently, non procedural) ball on the mesh. 
+<p>	
+The current functionality procedurally creates a mesh from a *.TIN file (A common GIS file which is composed of triangles creating a surface - see http://www.xmswiki.com/wiki/TIN_Files for a breakdown of the file type). It applies a rigidbody, a texture/material, a non-kinematic physics model to the mesh and then drops a (currently, non procedural) ball on the mesh. 
 
-Our final project would include the following:
+**Program**<p>
 	A GUI that allows the user to select certain parameters, as well as input a raster / TIN file to be created and move the camera. 
 	Here are two examples of FPS style camera controllers: 
 	http://wiki.unity3d.com/index.php/FPSWalkerEnhanced 
 	http://docs.unity3d.com/ScriptReference/CharacterController.Move.html
-	Unity GUI class reference: 
+	<p>Unity GUI class reference: 
 	http://docs.unity3d.com/Manual/UISystem.html
 	Create a TIN from an input raster using Delaunay Triangulation(This could be omitted, it is the hardest part of the project)
 	https://en.wikipedia.org/wiki/Delaunay_triangulation
@@ -23,12 +24,12 @@ Our final project would include the following:
 	A camera and lighting model that has nice shading
 
 
-Reach goals:
+<b>Program Extensions (Reach Goals)</b><p>
 	Allow the user to dynamically change where the spheres spawn (i.e. the spheres spawn from a 2d grid that is set above the terrain - let them define the center, length, and width of the grid, as well as the rotation of it)
 	Allow the user camera control so they can navigate the scene
 	Allow the user to set points where they can measure runoff, to get an idea of the percent of dropped water that goes through a certain section of the pourshed
 
-Cool stuff this project includes:
+Cool stuff this project includes:<p>
 	We can implement a simple lighting model and any type of static or dynamic camera we want
 	We can apply textures to the environment based on height 
 	It looks pretty

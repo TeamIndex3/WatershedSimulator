@@ -21,6 +21,16 @@ public class UIController : MonoBehaviour {
 		}
 	}
 
+	public void LoadRainScene()
+	{
+		Application.LoadLevel ("RainScene");
+	}
+
+	public void LoadRiverScene()
+	{
+		Application.LoadLevel ("RiverScene");
+	}
+
 	public void Exit()
 	{
 		Application.Quit ();

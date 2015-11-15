@@ -1,0 +1,66 @@
+Initialize engine version: 5.2.2f1 (3757309da7e7)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: AMD Radeon (TM) R9 390 Series (ID=0x67b1)
+    Vendor:   ATI
+    VRAM:     8171 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\System.Core.dll (this message is harmless)
+- Completed reload, in  0.056 seconds
+desktop: 1920x1080 60Hz; virtual: 5760x1620 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+Platform assembly: X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\x86Binary_Data\Managed\System.dll (this message is harmless)
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 1824 -> priority: 1 
+  Thread -> id: a2c -> priority: 1 
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.785245 ms
+
+Unloading 5 unused Assets to reduce memory usage. Loaded Objects now: 514.
+Total: 0.372044 ms (FindLiveObjects: 0.037155 ms CreateObjectMapping: 0.013200 ms MarkObjects: 0.301644 ms  DeleteObjects: 0.009288 ms)
+
+IsolatedStorageException: Could not find file "X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\example.tin".
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, Boolean anonymous, FileOptions options) [0x00000] in <filename unknown>:0 
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share) [0x00000] in <filename unknown>:0 
+  at System.IO.File.OpenRead (System.String path) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path) [0x00000] in <filename unknown>:0 
+  at CreateMesh.MeshSetup (System.String fileName) [0x00000] in <filename unknown>:0 
+  at CreateMesh.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.986844 ms
+
+Unloading 133 unused Assets to reduce memory usage. Loaded Objects now: 266.
+Total: 2.044044 ms (FindLiveObjects: 0.034222 ms CreateObjectMapping: 0.011244 ms MarkObjects: 0.293822 ms  DeleteObjects: 1.697911 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.447333 ms
+
+Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 547.
+Total: 0.447333 ms (FindLiveObjects: 0.030311 ms CreateObjectMapping: 0.009777 ms MarkObjects: 0.390622 ms  DeleteObjects: 0.012711 ms)
+
+IsolatedStorageException: Could not find file "X:\School\CIS422\WatershedSimulator\PNG2Mesh\bin\Windows 64\example.tin".
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, Boolean anonymous, FileOptions options) [0x00000] in <filename unknown>:0 
+  at System.IO.FileStream..ctor (System.String path, FileMode mode, FileAccess access, FileShare share) [0x00000] in <filename unknown>:0 
+  at System.IO.File.OpenRead (System.String path) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path, System.Text.Encoding encoding, Boolean detectEncodingFromByteOrderMarks, Int32 bufferSize) [0x00000] in <filename unknown>:0 
+  at System.IO.StreamReader..ctor (System.String path) [0x00000] in <filename unknown>:0 
+  at CreateMesh.MeshSetup (System.String fileName) [0x00000] in <filename unknown>:0 
+  at CreateMesh.Start () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+

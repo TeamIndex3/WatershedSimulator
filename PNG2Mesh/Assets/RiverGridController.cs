@@ -1,5 +1,5 @@
 ﻿/*
-Watershed Simulator Rain Controller
+Watershed Simulator River Controller
 Author: Max Kohl 
 Contributors in alphabetic order by last name:
         Abdulmajeed Kadi, Garrett Morrison, Hannah Smith, Joshua Yang
@@ -11,16 +11,16 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class RainGridController : MonoBehaviour {
-
+public class RiverGridController : MonoBehaviour {
+	
 	// Public data members - can be modified from the inspector. 
 	// Some of these are required to be populated for this script to run.
-
+	
 	// REQUIRED:
-	public RainGridNode root;
-	public GameObject dropPrefab;
+	public RiverGridNode root;
+	public GameObject riverDropPrefab;
 	public GameObject onSwitch;
-	public GameObject IntensitySlider;
+	public GameObject DischargeSlider;
 	public int maxNumDrops;
 	public int numDrops;
 	public int numZSteps;
@@ -45,8 +45,8 @@ public class RainGridController : MonoBehaviour {
 	//public float endZ;
 	public float xStep;
 	public float zStep;
-	public int minNumDropsInQueue;
-
+	public int minNumDropsAvailable;
+	
 	// Private data members - Not available to the Inspector
 	private Vector3 location;
 	private GameObject[] drops;
@@ -57,18 +57,18 @@ public class RainGridController : MonoBehaviour {
 	private Vector3 origin;
 	private GameObject dropPointer;
 	private Toggle on;
-	private Slider intensity;
-
+	private Slider discharge;
+	
 	// Every MonoBehavior has a Start function which is called upon instantiation into the Scene / Hierarchy
 	void Start () {
 		// Set class specific constants
 		origin = new Vector3 (0, 0, 0);
 		identity = Quaternion.identity;
 		on = onSwitch.GetComponent<Toggle> ();
-		intensity = IntensitySlider.GetComponent<Slider> ();
-
+		discharge = DischargeSlider.GetComponent<Slider> ();
+		
 		// Initialize the random number generator
-		// Use any integer seed value to track your procedural rainfall
+		// Use any integer seed value to track your procedural river creation
 		seed = new Seed ();
 		// Initialize drop pool and living drop counter. 
 		// Ideally numDropsAvailable will track how many drops have not been processed into rain.
@@ -76,8 +76,8 @@ public class RainGridController : MonoBehaviour {
 		availableDrops = new Queue<GameObject>();
 		numDropsAvailable = 0;
 		// Create the root node of the showerhead tree
-		root = (RainGridNode)ScriptableObject.CreateInstance("RainGridNode");
-		// Give it a base location Vector3 (the center point of the rain grid)
+		root = (RiverGridNode)ScriptableObject.CreateInstance("RiverGridNode");
+		// Give it a base location Vector3 (the center point of the river grid)
 		location = new Vector3 (centerX, centerY, centerZ);
 		root.Init (location);
 		// Recursively create the showerhead tree with a pointer to the following objects:
@@ -87,18 +87,18 @@ public class RainGridController : MonoBehaviour {
 		StartCoroutine (PopulateDrops());
 		// And now start dropping them on a regular timer
 		StartCoroutine (StartDropping ());
-		// Implied: Gravity is included in the drop prefab - Rain will begin with the instantion of this script.
+		// Implied: Gravity and constant force is included in the drop prefab - River will begin with the instantion of this script.
 	}
-
+	
 	void Awake()
 	{
 		
 		GetDimensions ();
 	}
-
+	
 	void GetDimensions()
 	{
-
+		
 		var bounds = surface.GetComponentsInChildren<MeshRenderer> ();
 		float minX = 0.0f;
 		float maxX = 0.0f;
@@ -131,7 +131,7 @@ public class RainGridController : MonoBehaviour {
 		xStep = lengthX / numXSteps;
 		zStep = lengthZ / numZSteps;
 	}
-
+	
 	// GUI input handler functions
 	public void HandleSwitch()
 	{
@@ -140,24 +140,24 @@ public class RainGridController : MonoBehaviour {
 		}
 		// All we care about is if the switch turns on
 		if (on.isOn) {
-			Debug.LogError("Turning rain on");
+			Debug.LogError("Turning River on");
 			StartCoroutine(StartDropping ());
 		}
 	}
 	
-	public void HandleIntensity()
+	public void Handledischarge()
 	{
-		if (intensity == null)
+		if (discharge == null)
 		{
 			return;
 		}
-		frequency = intensity.normalizedValue;
+		frequency = discharge.normalizedValue;
 	}
-
+	
 	private IEnumerator StartDropping()
 	{	
-		frequency = intensity.normalizedValue;
-		// Only drop rain when the on switch is...on
+		frequency = discharge.normalizedValue;
+		// Only run River when the on switch is...on
 		while (on.isOn) {
 			// Invert the slider so that a frequency of 1 causes a very small amount of time to pass between dropping
 			float delay = (1 - Mathf.Max (0.0001f, frequency)) * (maxTimeBetweenDrops);
@@ -165,18 +165,18 @@ public class RainGridController : MonoBehaviour {
 			root.Dispense ();
 			yield return new WaitForSeconds (delay);
 		}
-		Debug.LogError ("Turning rain off.");
+		Debug.LogError ("Turning River off.");
 	}
-
+	
 	private IEnumerator PopulateDrops()
 	{
-		Drop dropScript;
+		RiverDrop dropScript;
 		while (numDrops < maxNumDrops) {
 			for (int i = 0; i < numDropsPerCreationCycle; i++)
 			{
-				dropPointer = Instantiate (dropPrefab,origin,identity) as GameObject;
+				dropPointer = Instantiate (riverDropPrefab,origin,identity) as GameObject;
 				dropPointer.transform.parent = this.transform;
-				dropScript = dropPointer.GetComponent<Drop>();
+				dropScript = dropPointer.GetComponent<RiverDrop>();
 				dropScript.ID = numDrops;
 				dropScript.Disable ();
 				// Drop is already added to queue in disable function - this was the cause of drops being double counted.
@@ -188,10 +188,10 @@ public class RainGridController : MonoBehaviour {
 			yield return new WaitForSeconds (dropCreationDelaySeconds);
 		}
 	}
-
+	
 	public void RemoveDropFromQueue(Vector3 location)
 	{
-		if (numDropsAvailable > minNumDropsInQueue)
+		if (numDropsAvailable > minNumDropsAvailable)
 		{
 			float delay = seed.GetValueAsPercent() * maxTimeBetweenDrops;
 			numDropsAvailable--;
@@ -200,19 +200,19 @@ public class RainGridController : MonoBehaviour {
 			StartCoroutine (BeginDropping(drop, delay));
 		}
 	}
-
+	
 	private IEnumerator BeginDropping(GameObject drop, float delay)
 	{
 		yield return new WaitForSeconds (delay);
-		drop.GetComponent<Drop> ().Enable ();
+		drop.GetComponent<RiverDrop> ().Enable ();
 		//drop.Enable ();
 	}
-
+	
 	// Update is called once per frame
 	void Update () {
 		
 	}
-
+	
 	public void AddToQueue(GameObject drop)
 	{
 		this.availableDrops.Enqueue (drop);

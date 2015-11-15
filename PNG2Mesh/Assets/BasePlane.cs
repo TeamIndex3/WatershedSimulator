@@ -12,7 +12,18 @@ public class BasePlane : MonoBehaviour {
 
 		if (collision.collider is SphereCollider) {
 			var thing = collision.gameObject.GetComponent<Drop> ();
-			thing.Disable ();
+			if (thing != null)
+			{
+				thing.Disable ();
+			}
+			else
+			{
+				Debug.LogError ("BasePlane casting sphere collider as Drop failed. Collider: " + collision.collider.name);
+			}
+		}
+		else
+		{
+			Debug.LogError ("BasePlane experienced collision with non-sphere collider. Collider: " + collision.collider.name);
 		}
 	}
 	// Update is called once per frame

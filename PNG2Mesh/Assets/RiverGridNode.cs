@@ -1,47 +1,47 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RainGridNode : ScriptableObject {
-
-	public RainGridController grid;
-	public RainGridNode parent;
-	public RainGridNode[] children;
+public class RiverGridNode : ScriptableObject {
+	
+	public RiverGridController grid;
+	public RiverGridNode parent;
+	public RiverGridNode[] children;
 	public int numChildren;
 	public Vector3 location;
-
-	public RainGridNode()
+	
+	public RiverGridNode()
 	{
 		this.location = new Vector3 (0, 0, 0);
 	}
-
-	public RainGridNode(Vector3 loc)
+	
+	public RiverGridNode(Vector3 loc)
 	{
 		this.location = loc;
 	}
-
+	
 	// Use this for initialization
 	void Start () {
-	
-
+		
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
-
-	public void CreateTree(RainGridController grid, RainGridNode parent, int numRows, int numCols)
+	
+	public void CreateTree(RiverGridController grid, RiverGridNode parent, int numRows, int numCols)
 	{
 		this.grid = grid;
 		this.parent = parent;
 		numChildren = numRows;
-		RainGridNode temp = null;
-		children = new RainGridNode[numChildren];
+		RiverGridNode temp = null;
+		children = new RiverGridNode[numChildren];
 		float tempZFloat = grid.startZ;
 		float tempXFloat = grid.startX;
 		Vector3 tempLocation;
 		for (int i = 0; i < numChildren; i++){
-			temp = (RainGridNode)ScriptableObject.CreateInstance ("RainGridNode");
+			temp = (RiverGridNode)ScriptableObject.CreateInstance ("RiverGridNode");
 			if (this.parent == null)
 			{
 				//tempZFloat += grid.zStep;
@@ -58,48 +58,53 @@ public class RainGridNode : ScriptableObject {
 			}
 			else
 			{
-				Debug.LogError ("Impossible case, this RainGridNode has no parent pointer AND no parent.parent pointer");
+				Debug.LogError ("Impossible case, this RiverGridNode has no parent pointer AND no parent.parent pointer");
 			}
 			//temp.Init (location);
 			temp.CreateTree(grid,this,numCols,0);
 			children[i] = temp;
 		}
 	}
-
+	
 	public void Dispense()
 	{
+		// Called on the root node, this recursive finds a random leaf node,
+		// tells that node to create a drop at a random (x,y,z) coordinate,
+		// after a random delay time.
 		if (numChildren == 0) {
-			DropRain ();
+			DropRiver ();
 		} else {
 			children[GetNextChild()].Dispense();
 		}
 	}
-
+	
 	public void Init(Vector3 loc)
 	{
+		// Initialization method, since constructors are ignored on ScriptableObjects
 		this.location = loc;
 	}
-
+	
 	private int GetNextChild()
 	{
+		// Return the index of a random child node
 		return grid.seed.GetValueAsInt(0,numChildren);
 	}
-
-	private void DropRain()
+	
+	private void DropRiver()
 	{
 		// Take a drop from the pool, 
 		// give it this location, 
 		// give it a yield return new waitforseconds that is random
 		// reduce the availabledrop counter;
 		// Then enable the drop.
-		// Ensure there are drops available in the queue
-		if (grid.numDropsAvailable > grid.minNumDropsInQueue) {
+		// Ensure there is a drop object available in the queue.
+		if (grid.numDropsAvailable > grid.minNumDropsAvailable) {
 			// Now it is worth the memory allocation
 			float percent, tempx, tempz;
 			// Find a random percent to multiply the x offset from this node's location by
 			percent = grid.seed.GetValueAsPercent();
 			tempx = (location[0] - grid.xStep/2) + (grid.xStep * percent);
-			// Do the same for the z coordinate
+			// Do the same thing with the z offset
 			percent = grid.seed.GetValueAsPercent();
 			tempz = (location[2] - grid.zStep/2) + (grid.zStep * percent);
 			// Tell the grid to dequeue a drop at the given x,z location with a constant y

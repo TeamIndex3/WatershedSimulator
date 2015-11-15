@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Drop : MonoBehaviour {
+public class RiverDrop : MonoBehaviour {
 	
 	public Rigidbody body;
 	public bool colliding;
@@ -10,25 +10,27 @@ public class Drop : MonoBehaviour {
 	public float maxMass;
 	public Vector3 velocityVector;
 	public float maxVelocity = 19.6f;
-	public RainGridController controller;
+	public RiverGridController controller;
 	public int ID;
-
+	
 	// Use this for initialization
 	void Start () {
 		// Nothing to be instantiated here
 	}
-	
+
 	// When this comes into existense, set some properties.
 	void Awake()
 	{
 		this.colliding = false;
-		// Hook up the RainGrid script pointer
-		grid = GameObject.Find ("RainGrid");
-		controller = grid.GetComponent<RainGridController> ();
+		// Hook up the RiverGrid script pointer
+		grid = GameObject.Find ("RiverGrid");
+		if (grid != null) {
+			controller = grid.GetComponent<RiverGridController> ();
+		}
 		// Initialize the ID
 		ID = 0;
 	}
-
+	
 	public void Enable()
 	{
 		// Turn all physics and rendering on for this drop.
@@ -73,7 +75,7 @@ public class Drop : MonoBehaviour {
 	void Update()
 	{
 	}
-
+	
 	public void Disable()
 	{
 		// Turn off all physics and rendering for this drop and add it to the available drop queue.
@@ -83,16 +85,16 @@ public class Drop : MonoBehaviour {
 		this.r.GetComponentInParent<Renderer> ().enabled = false;*/
 		// SetActive does the same thing as the above code
 		this.gameObject.SetActive(false);
-		// Null check the RainGrid before we mess with it
+		// Null check the grid before we mess with it
 		if (grid == null) {
 			// If the grid pointer doesn't exist, try to find it again
 			Debug.LogError ("Null grid, try it again!");
-			grid = GameObject.Find("RainGrid");
+			grid = GameObject.Find("RiverGrid");
 		}
-		// Add ourselves to the RainGrid available drops queue.
+		// Add ourselves to the RiverGrid available drops queue.
 		controller.AddToQueue (this.gameObject);
 	}
-
+	
 	void OnCollisionEnter(Collision collision)
 	{
 		// Multiple collisions can occur at once - make sure this is an atomic operation!
@@ -104,7 +106,7 @@ public class Drop : MonoBehaviour {
 		// Check to see if we are touching another drop.
 		if (collision.collider is SphereCollider) {
 			// We need their drop script
-			var thing = collision.gameObject.GetComponent<Drop>();
+			var thing = collision.gameObject.GetComponent<RiverDrop>();
 			// Make sure they aren't busy too
 			if (thing.colliding == true)
 			{
@@ -129,19 +131,20 @@ public class Drop : MonoBehaviour {
 			// Break ties first - we don't want to let both objects grow and not get deleted.
 			if (m == this.body.mass)
 			{
-				// This is the easiest way to break ties since every clone of a prefab has a unique ID assigned as it is instantiated
+				// This is the easiest way to break ties since every clone of a prefab has a unique name
+				// 
 				if (thing.ID <= this.ID)
 				{
 					// Make sure the resulting drop isn't "too big"
 					if (m + this.body.mass <= maxMass)
 					{
-						//Debug.LogError ("Drop Grew!");
+						//Debug.LogError ("RiverDrop Grew!");
 						this.body.mass += m;
 						this.gameObject.transform.localScale += collision.transform.localScale;
 					}
 					//else
 					//{
-					//	Debug.LogError ("This drop would be too big!");
+					//	Debug.LogError ("This RiverDrop would be too big!");
 					//}
 				}
 				// Only turn this drop off if the other drop is going to grow
@@ -156,7 +159,7 @@ public class Drop : MonoBehaviour {
 				// Make sure the resulting drop isn't "too big"
 				if (m + this.body.mass <= maxMass)
 				{
-					//Debug.LogError ("Drop Grew!");
+					//Debug.LogError ("RiverDrop Grew!");
 					this.body.mass += m;
 					this.gameObject.transform.localScale += collision.transform.localScale;
 				}
@@ -168,8 +171,8 @@ public class Drop : MonoBehaviour {
 			else if (m + this.body.mass <= maxMass)
 			{
 				// The other sphere is bigger, just turn this drop off.
-
-				//Debug.LogError("Drop disappeared!");
+				
+				//Debug.LogError("RiverDrop disappeared!");
 				Disable ();
 			}
 		}

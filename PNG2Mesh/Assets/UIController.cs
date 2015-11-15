@@ -31,6 +31,11 @@ public class UIController : MonoBehaviour {
 		Application.LoadLevel ("RiverScene");
 	}
 
+	public void LoadMainScene()
+	{
+		Application.LoadLevel ("BaseScene");
+	}
+
 	public void Exit()
 	{
 		Application.Quit ();

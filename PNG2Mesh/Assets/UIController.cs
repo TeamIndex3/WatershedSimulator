@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityStandardAssets.Characters.FirstPerson;
+using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
 
 
 	public GameObject gui;
-	private bool show = false;
+	public GameObject controller;
+	private bool showUI = false;
+	private bool allowFPS = false;
 	// Use this for initialization
 	void Start () {
 		
@@ -16,8 +20,29 @@ public class UIController : MonoBehaviour {
 		// Allow escape key to toggle GUI rendering and interaction
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			//Debug.LogError ("Open GUI!");
-			show = !show;
-			gui.gameObject.SetActive (show);
+			showUI = !showUI;
+			gui.gameObject.SetActive (showUI);
+		}
+	}
+
+	public void ToggleFPSView()
+	{
+		allowFPS = !allowFPS;
+		//Debug.LogError (controller.name + ": " + allowFPS);
+		controller.SetActive (allowFPS);
+		var label = GameObject.Find("FPS Camera Button");
+		if (label != null) {
+			var labelText = label.GetComponentInChildren<Text>();
+			if (labelText != null)
+			{
+				if (labelText.text=="Enter the Matrix...")
+				{
+					labelText.text = "EXIT THE MATRIX!";
+				}
+				else{
+					labelText.text = "Enter the Matrix...";
+				}
+			}
 		}
 	}
 

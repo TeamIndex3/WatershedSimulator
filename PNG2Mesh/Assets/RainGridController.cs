@@ -175,8 +175,20 @@ public class RainGridController : MonoBehaviour {
 			for (int i = 0; i < numDropsPerCreationCycle; i++)
 			{
 				dropPointer = Instantiate (dropPrefab,origin,identity) as GameObject;
+				if (dropPointer == null)
+				{
+					Debug.LogError ("Drop instantiation failed!");
+					// Exit the loop early
+					yield break;
+				}
 				dropPointer.transform.parent = this.transform;
 				dropScript = dropPointer.GetComponent<Drop>();
+				if (dropScript == null)
+				{
+					Debug.LogError ("Invalid Drop Prefab in RiverGridController");
+					// Exit the loop early
+					yield break;
+				}
 				dropScript.ID = numDrops;
 				dropScript.Disable ();
 				// Drop is already added to queue in disable function - this was the cause of drops being double counted.

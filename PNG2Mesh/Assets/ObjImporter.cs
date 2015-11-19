@@ -1,4 +1,10 @@
-﻿/* This version of ObjImporter first reads through the entire file, getting a count of how large
+﻿/* 
+ * This code is available on the Unity Wiki at:
+ * http://wiki.unity3d.com/index.php?title=ObjImporter
+ * 
+ * Muchas Gracias al autor, el anonimo.
+ * 
+ * This version of ObjImporter first reads through the entire file, getting a count of how large
  * the final arrays will be, and then uses standard arrays for everything (as opposed to ArrayLists
  * or any other fancy things). 
  */

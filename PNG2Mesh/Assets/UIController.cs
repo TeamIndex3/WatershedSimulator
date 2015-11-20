@@ -60,6 +60,16 @@ public class UIController : MonoBehaviour {
 		}
 	}
 
+	public void Pause()
+	{
+		Time.timeScale = 0.0f;
+	}
+
+	public void Play()
+	{
+		Time.timeScale = 1.0f;
+	}
+
 	public void LoadRainScene()
 	{
 		//KillAllScenery ();

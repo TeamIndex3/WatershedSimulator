@@ -38,7 +38,7 @@ public class RiverGridNode : ScriptableObject {
 		RiverGridNode temp = null;
 		children = new RiverGridNode[numChildren];
 		float tempZFloat = grid.startZ;
-		float tempXFloat = grid.startX;
+		float tempYFloat = grid.startY;
 		Vector3 tempLocation;
 		for (int i = 0; i < numChildren; i++){
 			temp = (RiverGridNode)ScriptableObject.CreateInstance ("RiverGridNode");
@@ -46,26 +46,26 @@ public class RiverGridNode : ScriptableObject {
 			{
 				//tempZFloat += grid.zStep;
 				// Assume this is a direct child of the root. Update z steps
-				tempLocation = new Vector3(location[0],location[1],tempZFloat + i*grid.xStep);
+				tempLocation = new Vector3(location[0],location[1],tempZFloat + i*grid.zStep);
 				temp.Init (tempLocation);
 			}
 			else if (this.parent.parent == null)
 			{
 				//tempXFloat += grid.xStep;
-				// Assume this is a direct child of the root. Update z steps
-				tempLocation = new Vector3(tempXFloat + i*grid.xStep,location[1],location[2]);
+				// Assume this is a direct child of the root. Update x steps
+				tempLocation = new Vector3(location[0],tempYFloat + i*grid.yStep,location[2]);
 				temp.Init (tempLocation);
 			}
 			else
 			{
-				Debug.LogError ("Impossible case, this RiverGridNode has no parent pointer AND no parent.parent pointer");
+				Debug.LogError ("Impossible case in CreateTree, this RiverGridNode has no parent pointer AND no parent.parent pointer");
 			}
 			//temp.Init (location);
 			temp.CreateTree(grid,this,numCols,0);
 			children[i] = temp;
 		}
 	}
-	
+
 	public void Dispense()
 	{
 		// Called on the root node, this recursive finds a random leaf node,
@@ -100,15 +100,15 @@ public class RiverGridNode : ScriptableObject {
 		// Ensure there is a drop object available in the queue.
 		if (grid.numDropsAvailable > grid.minNumDropsAvailable) {
 			// Now it is worth the memory allocation
-			float percent, tempx, tempz;
+			float percent, tempy, tempz;
 			// Find a random percent to multiply the x offset from this node's location by
 			percent = grid.seed.GetValueAsPercent();
-			tempx = (location[0] - grid.xStep/2) + (grid.xStep * percent);
+			tempy = (location[1] - grid.yStep/2) + (grid.yStep * percent);
 			// Do the same thing with the z offset
 			percent = grid.seed.GetValueAsPercent();
 			tempz = (location[2] - grid.zStep/2) + (grid.zStep * percent);
 			// Tell the grid to dequeue a drop at the given x,z location with a constant y
-			grid.RemoveDropFromQueue(new Vector3(tempx,location[1],tempz));
+			grid.RemoveDropFromQueue(new Vector3(location[0],location[1],tempz));
 			//Debug.LogError ("Dropping drop at location " + tempx + "," + location[1] + "," + tempz);
 		}
 	}

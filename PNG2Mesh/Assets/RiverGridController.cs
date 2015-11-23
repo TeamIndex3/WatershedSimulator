@@ -24,11 +24,12 @@ public class RiverGridController : MonoBehaviour {
 	public int maxNumDrops;
 	public int numDrops;
 	public int numZSteps;
-	public int numXSteps;
+	public int numYSteps;
 	public float centerX;
 	public float centerY;
 	public float centerZ;
 	public float scaleX;
+	public float scaleY;
 	public float scaleZ;
 	public float frequency;
 	public float lengthX;
@@ -40,10 +41,11 @@ public class RiverGridController : MonoBehaviour {
 	public Queue<GameObject> availableDrops;
 	public GameObject surface;
 	public float startX;
+	public float startY;
 	//public float endX;
 	public float startZ;
 	//public float endZ;
-	public float xStep;
+	public float yStep;
 	public float zStep;
 	public int minNumDropsAvailable;
 	
@@ -78,11 +80,11 @@ public class RiverGridController : MonoBehaviour {
 		// Create the root node of the showerhead tree
 		root = (RiverGridNode)ScriptableObject.CreateInstance("RiverGridNode");
 		// Give it a base location Vector3 (the center point of the river grid)
-		location = new Vector3 (centerX, centerY, centerZ);
+		location = new Vector3 (startX, centerY, centerZ);
 		root.Init (location);
 		// Recursively create the showerhead tree with a pointer to the following objects:
 		// This class, a null parent, and the dimensions of the tree.
-		root.CreateTree (this, null, numZSteps, numXSteps);
+		root.CreateTree (this, null, numZSteps, numYSteps);
 		// Now prime the pump by adding drops to the available drops queue
 		StartCoroutine (PopulateDrops());
 		// And now start dropping them on a regular timer
@@ -99,36 +101,73 @@ public class RiverGridController : MonoBehaviour {
 	void GetDimensions()
 	{
 		
-		var bounds = surface.GetComponentsInChildren<MeshRenderer> ();
+		var surfaceMeshRenderers = surface.GetComponentsInChildren<MeshRenderer> ();
 		float minX = 0.0f;
 		float maxX = 0.0f;
 		float minZ = 0.0f;
 		float maxZ = 0.0f;
 		bool updated = false;
-		foreach (MeshRenderer mesh in bounds) {
-			if (updated)
-			{
-				minZ = Mathf.Min (minZ,mesh.bounds.extents.z);
-				maxZ = Mathf.Max (maxZ,mesh.bounds.extents.z);
-				minX = Mathf.Min (minX,mesh.bounds.extents.x);
-				maxX = Mathf.Max (maxX,mesh.bounds.extents.x);
+		Bounds encapsulatedBounds;
+		if (surfaceMeshRenderers!= null && surfaceMeshRenderers.Length > 0) {
+			encapsulatedBounds = surfaceMeshRenderers [0].bounds;
+			foreach (MeshRenderer mesh in surfaceMeshRenderers) {
+				encapsulatedBounds.Encapsulate(mesh.bounds);
+				if (updated) {
+					minZ = Mathf.Min (minZ, mesh.bounds.extents.z);
+					maxZ = Mathf.Max (maxZ, mesh.bounds.extents.z);
+					minX = Mathf.Min (minX, mesh.bounds.extents.x);
+					maxX = Mathf.Max (maxX, mesh.bounds.extents.x);
+				} else {
+					minZ = mesh.bounds.extents.z;
+					maxZ = mesh.bounds.extents.z;
+					minX = mesh.bounds.extents.x;
+					maxX = mesh.bounds.extents.x;
+					updated = true;
+				}
 			}
-			else
-			{
-				minZ = mesh.bounds.extents.z;
-				maxZ = mesh.bounds.extents.z;
-				minX = mesh.bounds.extents.x;
-				maxX = mesh.bounds.extents.x;
-				updated = true;
-			}
+			centerX = encapsulatedBounds.center.x;
+			centerY = encapsulatedBounds.max.y;
+			centerZ = encapsulatedBounds.center.z;
+
+			Vector3 p0;
+			Vector3 p1;
+			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
+			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
+			Debug.DrawLine (p0,p1,Color.red,2f,false);
+			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
+			p1 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.max.y,encapsulatedBounds.min.z);
+			Debug.DrawLine (p0,p1,Color.red,2f,false);
+			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
+			p1 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.max.z);
+			Debug.DrawLine (p0,p1,Color.red,2f,false);
+			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
+			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
+			Debug.DrawLine (p0,p1,Color.red,2f,false);
+			p0 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.min.y,encapsulatedBounds.max.z);
+			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
+			Debug.DrawLine (p0,p1,Color.red,2f,false);
+			p0 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.min.z);
+			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
+			Debug.DrawLine (p0,p1,Color.red,2f,false);
+			//Debug.DrawLine (encapsulatedBounds.min.y, encapsulatedBounds.max.y,Color.red,2f,false);
+			//Debug.DrawLine (encapsulatedBounds.min.z, encapsulatedBounds.max.z,Color.red,2f,false);
+			/*Debug.DrawLine (encapsulatedBounds.min, encapsulatedBounds.max,Color.red,2f,false);
+			Debug.DrawLine (encapsulatedBounds.min, encapsulatedBounds.max,Color.red,2f,false);
+			Debug.DrawLine (encapsulatedBounds.min, encapsulatedBounds.max,Color.red,2f,false);
+			Debug.DrawLine (encapsulatedBounds.min, encapsulatedBounds.max,Color.red,2f,false);
+			Debug.DrawLine (encapsulatedBounds.min, encapsulatedBounds.max,Color.red,2f,false);*/
 		}
-		lengthX = scaleX*(maxX - minX);
-		lengthZ = scaleZ*(maxZ - minZ);
-		startX = centerX - (lengthX / 2);
+		lengthX = scaleX*(encapsulatedBounds.max.x - encapsulatedBounds.min.x);
+		//lengthX = scaleX*(maxX - minX);
+		lengthZ = scaleZ*(encapsulatedBounds.max.z - encapsulatedBounds.min.z);
+		//lengthZ = scaleZ*(maxZ - minZ);
+		startY = centerY;
+		startX = encapsulatedBounds.min.x;
+		//startX = centerX - (lengthX / 2);
 		float endX = centerX + (lengthX / 2);
 		startZ = centerZ - (lengthZ / 2);
 		float endZ = centerZ + (lengthZ / 2);
-		xStep = lengthX / numXSteps;
+		yStep = 20*scaleY;
 		zStep = lengthZ / numZSteps;
 	}
 	

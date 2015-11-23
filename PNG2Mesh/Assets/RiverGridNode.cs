@@ -29,7 +29,17 @@ public class RiverGridNode : ScriptableObject {
 	void Update () {
 		
 	}
-	
+
+	public void Kill()
+	{
+		if (numChildren > 0) {
+			foreach (RiverGridNode child in children) {
+				child.Kill ();
+				Destroy (child);
+			}
+		}
+	}
+
 	public void CreateTree(RiverGridController grid, RiverGridNode parent, int numRows, int numCols)
 	{
 		this.grid = grid;

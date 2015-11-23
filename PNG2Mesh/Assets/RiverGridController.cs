@@ -21,6 +21,7 @@ public class RiverGridController : MonoBehaviour {
 	public GameObject riverDropPrefab;
 	public GameObject onSwitch;
 	public GameObject DischargeSlider;
+	public GameObject heightSlider;
 	public int maxNumDrops;
 	public int numDrops;
 	public int numZSteps;
@@ -34,7 +35,6 @@ public class RiverGridController : MonoBehaviour {
 	public float frequency;
 	public float lengthX;
 	public float lengthZ;
-	public float height;
 	public int numDropsAvailable;
 	public Seed seed;
 	public float maxTimeBetweenDrops;
@@ -48,6 +48,7 @@ public class RiverGridController : MonoBehaviour {
 	public float yStep;
 	public float zStep;
 	public int minNumDropsAvailable;
+	private Bounds encapsulatedBounds;
 	
 	// Private data members - Not available to the Inspector
 	private Vector3 location;
@@ -60,6 +61,8 @@ public class RiverGridController : MonoBehaviour {
 	private GameObject dropPointer;
 	private Toggle on;
 	private Slider discharge;
+	private Slider height;
+	private IEnumerator dropping;
 	
 	// Every MonoBehavior has a Start function which is called upon instantiation into the Scene / Hierarchy
 	void Start () {
@@ -68,6 +71,7 @@ public class RiverGridController : MonoBehaviour {
 		identity = Quaternion.identity;
 		on = onSwitch.GetComponent<Toggle> ();
 		discharge = DischargeSlider.GetComponent<Slider> ();
+		height = heightSlider.GetComponent<Slider> ();
 		
 		// Initialize the random number generator
 		// Use any integer seed value to track your procedural river creation
@@ -88,7 +92,8 @@ public class RiverGridController : MonoBehaviour {
 		// Now prime the pump by adding drops to the available drops queue
 		StartCoroutine (PopulateDrops());
 		// And now start dropping them on a regular timer
-		StartCoroutine (StartDropping ());
+		dropping = StartDropping ();
+		StartCoroutine (dropping);
 		// Implied: Gravity and constant force is included in the drop prefab - River will begin with the instantion of this script.
 	}
 	
@@ -107,7 +112,6 @@ public class RiverGridController : MonoBehaviour {
 		float minZ = 0.0f;
 		float maxZ = 0.0f;
 		bool updated = false;
-		Bounds encapsulatedBounds;
 		if (surfaceMeshRenderers!= null && surfaceMeshRenderers.Length > 0) {
 			encapsulatedBounds = surfaceMeshRenderers [0].bounds;
 			foreach (MeshRenderer mesh in surfaceMeshRenderers) {
@@ -128,27 +132,6 @@ public class RiverGridController : MonoBehaviour {
 			centerX = encapsulatedBounds.center.x;
 			centerY = encapsulatedBounds.max.y;
 			centerZ = encapsulatedBounds.center.z;
-
-			Vector3 p0;
-			Vector3 p1;
-			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
-			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
-			Debug.DrawLine (p0,p1,Color.red,2f,false);
-			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
-			p1 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.max.y,encapsulatedBounds.min.z);
-			Debug.DrawLine (p0,p1,Color.red,2f,false);
-			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.min.z);
-			p1 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.max.z);
-			Debug.DrawLine (p0,p1,Color.red,2f,false);
-			p0 = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
-			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
-			Debug.DrawLine (p0,p1,Color.red,2f,false);
-			p0 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.min.y,encapsulatedBounds.max.z);
-			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
-			Debug.DrawLine (p0,p1,Color.red,2f,false);
-			p0 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.min.z);
-			p1 = new Vector3(encapsulatedBounds.max.x,encapsulatedBounds.max.y,encapsulatedBounds.max.z);
-			Debug.DrawLine (p0,p1,Color.red,2f,false);
 			//Debug.DrawLine (encapsulatedBounds.min.y, encapsulatedBounds.max.y,Color.red,2f,false);
 			//Debug.DrawLine (encapsulatedBounds.min.z, encapsulatedBounds.max.z,Color.red,2f,false);
 			/*Debug.DrawLine (encapsulatedBounds.min, encapsulatedBounds.max,Color.red,2f,false);
@@ -170,6 +153,33 @@ public class RiverGridController : MonoBehaviour {
 		yStep = 20*scaleY;
 		zStep = lengthZ / numZSteps;
 	}
+
+	public void HandleHeightSlider()
+	{
+		if (height == null) {
+			return;
+		}
+		bool wasOn = on.isOn;
+		startY = encapsulatedBounds.min.y + (height.normalizedValue * (encapsulatedBounds.max.y*2));
+		root = null;
+		if (wasOn == true) {
+			StopCoroutine (dropping);
+			on.isOn = false;
+		}
+		// Create the root node of the showerhead tree
+		root = (RiverGridNode)ScriptableObject.CreateInstance("RiverGridNode");
+		// Give it a base location Vector3 (the center point of the river grid)
+		location = new Vector3 (startX, centerY, centerZ);
+		//Debug.LogError ("Creating riverGridNodes at center: " + location [0] + "," + location [1] + "," + location [2]);
+		root.Init (location);
+		// Recursively create the showerhead tree with a pointer to the following objects:
+		// This class, a null parent, and the dimensions of the tree.
+		root.CreateTree (this, null, numZSteps, numYSteps);
+		if (wasOn == true) {
+			on.isOn = true;
+		}
+
+	}
 	
 	// GUI input handler functions
 	public void HandleSwitch()
@@ -179,8 +189,9 @@ public class RiverGridController : MonoBehaviour {
 		}
 		// All we care about is if the switch turns on
 		if (on.isOn) {
-			Debug.LogError("Turning River on");
-			StartCoroutine(StartDropping ());
+			//Debug.LogError("Turning River on");
+			StopCoroutine (dropping);
+			StartCoroutine(dropping);
 		}
 	}
 	

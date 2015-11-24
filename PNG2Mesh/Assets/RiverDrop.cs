@@ -103,6 +103,12 @@ public class RiverDrop : MonoBehaviour {
 		}
 		// Don't allow any other collisions to be processed on this object while we are working on it
 		this.colliding = true;
+		if (body.velocity.sqrMagnitude <= 0.005f)
+		{
+			this.colliding = false;
+			Disable ();
+			return;
+		}
 		// Check to see if we are touching another drop.
 		if (collision.collider is SphereCollider) {
 			// We need their drop script

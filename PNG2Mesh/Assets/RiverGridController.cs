@@ -56,6 +56,7 @@ public class RiverGridController : MonoBehaviour {
 	public float velocityScalar;
 	public Vector3 InitialVelocity;
 	public Vector3 DropConstantForce;
+	public Vector3 origin;
 	
 	// Private data members - Not available to the Inspector
 	private Vector3 location;
@@ -64,7 +65,6 @@ public class RiverGridController : MonoBehaviour {
 	private float dropCreationDelaySeconds = 1;
 	private int numDropsPerCreationCycle = 100;
 	private Quaternion identity;
-	private Vector3 origin;
 	private GameObject dropPointer;
 	private Toggle on;
 	private Slider discharge;
@@ -172,6 +172,12 @@ public class RiverGridController : MonoBehaviour {
 		yStep = heightScalar*scaleY;
 		zStep = lengthZ / numZSteps;
 		HandleVelocitySlider ();
+		Camera mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+		if (mainCamera != null) {
+			mainCamera.transform.position = new Vector3(encapsulatedBounds.max.x,centerY,encapsulatedBounds.min.z);
+			Vector3 target = new Vector3(encapsulatedBounds.min.x,encapsulatedBounds.min.y,encapsulatedBounds.max.z);
+			mainCamera.transform.LookAt(target);
+		}
 	}
 
 	public void UpdateRiverTree()

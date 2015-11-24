@@ -22,6 +22,10 @@ public class RiverGridController : MonoBehaviour {
 	public GameObject onSwitch;
 	public GameObject DischargeSlider;
 	public GameObject heightSlider;
+	public GameObject XSlider;
+	public GameObject ZSlider;
+	public GameObject ZScaleSlider;
+	public GameObject velocitySlider;
 	public int maxNumDrops;
 	public int numDrops;
 	public int numZSteps;
@@ -48,7 +52,10 @@ public class RiverGridController : MonoBehaviour {
 	public float yStep;
 	public float zStep;
 	public int minNumDropsAvailable;
-	private Bounds encapsulatedBounds;
+	public int heightScalar;
+	public float velocityScalar;
+	public Vector3 InitialVelocity;
+	public Vector3 DropConstantForce;
 	
 	// Private data members - Not available to the Inspector
 	private Vector3 location;
@@ -62,6 +69,11 @@ public class RiverGridController : MonoBehaviour {
 	private Toggle on;
 	private Slider discharge;
 	private Slider height;
+	private Slider xSliderValue;
+	private Slider zSliderValue;
+	private Slider zScaleValue;
+	private Slider velocitySliderValue;
+	private Bounds encapsulatedBounds;
 	private IEnumerator dropping;
 	
 	// Every MonoBehavior has a Start function which is called upon instantiation into the Scene / Hierarchy
@@ -69,9 +81,7 @@ public class RiverGridController : MonoBehaviour {
 		// Set class specific constants
 		origin = new Vector3 (0, 0, 0);
 		identity = Quaternion.identity;
-		on = onSwitch.GetComponent<Toggle> ();
-		discharge = DischargeSlider.GetComponent<Slider> ();
-		height = heightSlider.GetComponent<Slider> ();
+		InitialVelocity = origin;
 		
 		// Initialize the random number generator
 		// Use any integer seed value to track your procedural river creation
@@ -99,7 +109,14 @@ public class RiverGridController : MonoBehaviour {
 	
 	void Awake()
 	{
-		
+		on = onSwitch.GetComponent<Toggle> ();
+		discharge = DischargeSlider.GetComponent<Slider> ();
+		height = heightSlider.GetComponent<Slider> ();
+		xSliderValue = XSlider.GetComponent<Slider> ();
+		zSliderValue = ZSlider.GetComponent<Slider> ();
+		zScaleValue = ZScaleSlider.GetComponent<Slider> ();
+		velocitySliderValue = velocitySlider.GetComponent < Slider> ();
+		scaleZ = zScaleValue.normalizedValue;
 		GetDimensions ();
 	}
 	
@@ -144,23 +161,22 @@ public class RiverGridController : MonoBehaviour {
 		//lengthX = scaleX*(maxX - minX);
 		lengthZ = scaleZ*(encapsulatedBounds.max.z - encapsulatedBounds.min.z);
 		//lengthZ = scaleZ*(maxZ - minZ);
-		startY = centerY;
-		startX = encapsulatedBounds.min.x;
+		//startY = centerY;
+		startY = encapsulatedBounds.min.y + (height.normalizedValue * (encapsulatedBounds.max.y*2));
+		startX = encapsulatedBounds.min.x + (xSliderValue.normalizedValue * encapsulatedBounds.max.x);
+		//startX = encapsulatedBounds.min.x;
 		//startX = centerX - (lengthX / 2);
 		float endX = centerX + (lengthX / 2);
-		startZ = centerZ - (lengthZ / 2);
+		startZ = encapsulatedBounds.min.z + (zSliderValue.normalizedValue * (encapsulatedBounds.max.z - encapsulatedBounds.min.z)) - lengthZ;
 		float endZ = centerZ + (lengthZ / 2);
-		yStep = 20*scaleY;
+		yStep = heightScalar*scaleY;
 		zStep = lengthZ / numZSteps;
+		HandleVelocitySlider ();
 	}
 
-	public void HandleHeightSlider()
+	public void UpdateRiverTree()
 	{
-		if (height == null) {
-			return;
-		}
-		bool wasOn = on.isOn;
-		startY = encapsulatedBounds.min.y + (height.normalizedValue * (encapsulatedBounds.max.y*2));
+		bool wasOn = on.isOn;root.Kill ();
 		root = null;
 		if (wasOn == true) {
 			StopCoroutine (dropping);
@@ -169,7 +185,7 @@ public class RiverGridController : MonoBehaviour {
 		// Create the root node of the showerhead tree
 		root = (RiverGridNode)ScriptableObject.CreateInstance("RiverGridNode");
 		// Give it a base location Vector3 (the center point of the river grid)
-		location = new Vector3 (startX, centerY, centerZ);
+		location = new Vector3 (startX, centerY, startZ);
 		//Debug.LogError ("Creating riverGridNodes at center: " + location [0] + "," + location [1] + "," + location [2]);
 		root.Init (location);
 		// Recursively create the showerhead tree with a pointer to the following objects:
@@ -178,7 +194,57 @@ public class RiverGridController : MonoBehaviour {
 		if (wasOn == true) {
 			on.isOn = true;
 		}
+	}
 
+	public void HandleVelocitySlider()
+	{
+		if (velocitySliderValue == null) {
+			return;
+		}
+		float tempVelocity = 1.0f-(0.5f - velocitySliderValue.normalizedValue) * velocityScalar;
+		InitialVelocity = new Vector3(tempVelocity,0,0);
+		DropConstantForce = new Vector3 (tempVelocity / 10.0f, -9.8f, 0);
+	}
+
+	public void HandleZSlider()
+	{
+		if (zSliderValue == null) {
+			return;
+		}
+		//startZ = encapsulatedBounds.min.z + zScaleValue.normalizedValue *(encapsulatedBounds.max.z - lengthZ);
+		//startZ = encapsulatedBounds.center.z + lengthZ*zSliderValue.normalizedValue;
+		startZ = encapsulatedBounds.min.z + (zSliderValue.normalizedValue * (encapsulatedBounds.max.z - encapsulatedBounds.min.z)) - lengthZ;
+		//startZ = encapsulatedBounds.min.X
+		UpdateRiverTree ();
+	}
+
+	public void HandleZScale()
+	{
+		if (zScaleValue == null) {
+			return;
+		}
+		scaleZ = zScaleValue.normalizedValue;
+		lengthZ = scaleZ*(encapsulatedBounds.max.z - encapsulatedBounds.min.z);
+		zStep = lengthZ / numZSteps;
+		UpdateRiverTree ();
+	}
+	public void HandleXSlider()
+	{
+		if (xSliderValue == null) {
+			return;
+		}
+		startX = encapsulatedBounds.min.x + (xSliderValue.normalizedValue * encapsulatedBounds.max.x);
+		UpdateRiverTree ();
+	}
+
+	public void HandleHeightSlider()
+	{
+		if (height == null) {
+			return;
+		}
+		startY = encapsulatedBounds.min.y + (height.normalizedValue * (encapsulatedBounds.max.y*2));
+
+		UpdateRiverTree();
 	}
 	
 	// GUI input handler functions
@@ -266,7 +332,14 @@ public class RiverGridController : MonoBehaviour {
 	private IEnumerator BeginDropping(GameObject drop, float delay)
 	{
 		yield return new WaitForSeconds (delay);
-		drop.GetComponent<RiverDrop> ().Enable ();
+		RiverDrop theDrop = drop.GetComponent<RiverDrop> ();
+		if (theDrop == null)
+		{
+			yield break;
+		}
+		theDrop.Enable ();
+		theDrop.body.velocity = InitialVelocity;
+		drop.GetComponent<ConstantForce>().force = DropConstantForce;
 		//drop.Enable ();
 	}
 	

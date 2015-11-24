@@ -49,12 +49,12 @@ public class RiverDrop : MonoBehaviour {
 		bool doUpdate = false;
 		float tempValue;
 		velocityVector = body.velocity;
-		tempValue = velocityVector.x;
+		/*tempValue = velocityVector.x;
 		if (Mathf.Abs (tempValue) > maxVelocity) {
 			tempValue = (tempValue > 0) ? maxVelocity:(-1)*maxVelocity;
 			velocityVector.x = tempValue;
 			doUpdate = true;
-		}
+		}*/
 		tempValue = velocityVector.y;
 		if (tempValue > maxVelocity/2) {
 			velocityVector.y = maxVelocity/2;

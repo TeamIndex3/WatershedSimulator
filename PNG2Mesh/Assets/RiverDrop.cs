@@ -45,6 +45,10 @@ public class RiverDrop : MonoBehaviour {
 	// Called every frame
 	void LateUpdate()
 	{
+		if (this.gameObject.transform.position.y < controller.GetMinimumY()) {
+			Disable ();
+			return;
+		}
 		// Make sure we don't have any crazy bounces going on by limiting the rate at which drops can move
 		bool doUpdate = false;
 		float tempValue;
@@ -55,7 +59,7 @@ public class RiverDrop : MonoBehaviour {
 			velocityVector.x = tempValue;
 			doUpdate = true;
 		}*/
-		tempValue = velocityVector.y;
+		/*tempValue = velocityVector.y;
 		if (tempValue > maxVelocity/2) {
 			velocityVector.y = maxVelocity/2;
 			doUpdate = true;
@@ -68,7 +72,7 @@ public class RiverDrop : MonoBehaviour {
 		}
 		if (doUpdate) {
 			body.velocity = velocityVector;
-		}
+		}*/
 	}
 
 	// Called every frame
@@ -103,7 +107,7 @@ public class RiverDrop : MonoBehaviour {
 		}
 		// Don't allow any other collisions to be processed on this object while we are working on it
 		this.colliding = true;
-		if (body.velocity.sqrMagnitude <= 0.005f)
+		if (Mathf.Abs (body.velocity.sqrMagnitude) <= 0.01f)
 		{
 			this.colliding = false;
 			Disable ();

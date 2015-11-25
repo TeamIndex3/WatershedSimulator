@@ -30,7 +30,12 @@ public class UIController : MonoBehaviour {
 		allowFPS = !allowFPS;
 		//Debug.LogError (controller.name + ": " + allowFPS);
 		controller.SetActive (allowFPS);
+		RiverGridController gridController = GameObject.FindObjectOfType<RiverGridController> ();
+		if (gridController != null) {
+			controller.transform.position = gridController.GetSurfaceTopCenter();
+		}
 		var label = GameObject.Find("FPS Camera Button");
+		var canvas = GameObject.FindObjectOfType<Canvas> ();
 		if (label != null) {
 			var labelText = label.GetComponentInChildren<Text>();
 			if (labelText != null)
@@ -38,8 +43,10 @@ public class UIController : MonoBehaviour {
 				if (labelText.text=="Enter the Matrix...")
 				{
 					labelText.text = "EXIT THE MATRIX!";
+					canvas.worldCamera = controller.GetComponent<Camera>();
 				}
 				else{
+					canvas.worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
 					labelText.text = "Enter the Matrix...";
 				}
 			}

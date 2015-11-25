@@ -62,7 +62,7 @@ public class RiverGridController : MonoBehaviour {
 	private Vector3 location;
 	private GameObject[] drops;
 	private GameObject currentDrop;
-	private float dropCreationDelaySeconds = 1;
+	private float dropCreationDelaySeconds = 1.0f;
 	private int numDropsPerCreationCycle = 100;
 	private Quaternion identity;
 	private GameObject dropPointer;
@@ -180,6 +180,16 @@ public class RiverGridController : MonoBehaviour {
 		}
 	}
 
+	public float GetMinimumY()
+	{
+		return encapsulatedBounds.min.y;
+	}
+
+	public Vector3 GetSurfaceTopCenter()
+	{
+		return new Vector3(encapsulatedBounds.center.x,encapsulatedBounds.max.y,encapsulatedBounds.center.z);
+	}
+
 	public void UpdateRiverTree()
 	{
 		bool wasOn = on.isOn;root.Kill ();
@@ -282,7 +292,7 @@ public class RiverGridController : MonoBehaviour {
 		// Only run River when the on switch is...on
 		while (on.isOn) {
 			// Invert the slider so that a frequency of 1 causes a very small amount of time to pass between dropping
-			float delay = (1 - Mathf.Max (0.0001f, frequency)) * (maxTimeBetweenDrops);
+			float delay = (1 - Mathf.Max (0.0000001f, frequency)) * (maxTimeBetweenDrops);
 			//Debug.LogError ("Waiting " + delay + " seconds for the next drop");
 			root.Dispense ();
 			yield return new WaitForSeconds (delay);

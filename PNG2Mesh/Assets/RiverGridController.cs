@@ -192,7 +192,8 @@ public class RiverGridController : MonoBehaviour {
 
 	public void UpdateRiverTree()
 	{
-		bool wasOn = on.isOn;root.Kill ();
+		bool wasOn = on.isOn;
+		root.Kill ();
 		root = null;
 		if (wasOn == true) {
 			StopCoroutine (dropping);
@@ -273,6 +274,8 @@ public class RiverGridController : MonoBehaviour {
 		if (on.isOn) {
 			//Debug.LogError("Turning River on");
 			StopCoroutine (dropping);
+			dropping = null;
+			dropping = StartDropping ();
 			StartCoroutine(dropping);
 		}
 	}

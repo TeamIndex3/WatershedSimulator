@@ -8,8 +8,10 @@ public class UIController : MonoBehaviour {
 
 	public GameObject gui;
 	public GameObject controller;
+	public GameObject confirmationPanel;
 	private bool showUI = false;
 	private bool allowFPS = false;
+	private bool exitConf = false;
 	// Use this for initialization
 	void Start () {
 		
@@ -93,6 +95,16 @@ public class UIController : MonoBehaviour {
 	{
 		//KillAllScenery ();
 		Application.LoadLevel ("BaseScene");
+	}
+
+	public void ExitConfirmation()
+	{
+		exitConf = !exitConf;
+
+		if (confirmationPanel != null)
+		{
+			confirmationPanel.SetActive(exitConf);
+		}
 	}
 
 	public void Exit()

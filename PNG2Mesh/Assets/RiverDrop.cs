@@ -59,12 +59,13 @@ public class RiverDrop : MonoBehaviour {
 			velocityVector.x = tempValue;
 			doUpdate = true;
 		}*/
-		/*tempValue = velocityVector.y;
+		tempValue = velocityVector.y;
 		if (tempValue > maxVelocity/2) {
 			velocityVector.y = maxVelocity/2;
 			doUpdate = true;
 		}
 		tempValue = velocityVector.z;
+
 		if (Mathf.Abs (tempValue) > maxVelocity) {
 			tempValue = (tempValue > 0) ? maxVelocity:(-1)*maxVelocity;
 			velocityVector.z = tempValue;
@@ -72,7 +73,7 @@ public class RiverDrop : MonoBehaviour {
 		}
 		if (doUpdate) {
 			body.velocity = velocityVector;
-		}*/
+		}
 	}
 
 	// Called every frame
@@ -107,12 +108,12 @@ public class RiverDrop : MonoBehaviour {
 		}
 		// Don't allow any other collisions to be processed on this object while we are working on it
 		this.colliding = true;
-		if (Mathf.Abs (body.velocity.sqrMagnitude) <= 0.01f)
+		/*if (Mathf.Abs (body.velocity.sqrMagnitude) <= 0.01f)
 		{
 			this.colliding = false;
 			Disable ();
 			return;
-		}
+		}*/
 		// Check to see if we are touching another drop.
 		if (collision.collider is SphereCollider) {
 			// We need their drop script

@@ -120,7 +120,7 @@ public class RiverGridController : MonoBehaviour {
 		GetDimensions ();
 	}
 	
-	void GetDimensions()
+	public void GetDimensions()
 	{
 		
 		var surfaceMeshRenderers = surface.GetComponentsInChildren<MeshRenderer> ();

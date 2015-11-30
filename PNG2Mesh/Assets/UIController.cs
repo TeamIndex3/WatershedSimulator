@@ -9,6 +9,12 @@ public class UIController : MonoBehaviour {
 	public GameObject gui;
 	public GameObject controller;
 	public GameObject confirmationPanel;
+	public GameObject surface0;
+	public GameObject surface1;
+	public GameObject surface2;
+	public GameObject surface3;
+	public GameObject surface4;
+	public GameObject surface5;
 	private bool showUI = false;
 	private bool allowFPS = false;
 	private bool exitConf = false;
@@ -105,6 +111,91 @@ public class UIController : MonoBehaviour {
 		{
 			confirmationPanel.SetActive(exitConf);
 		}
+	}
+
+	public void LoadSurface0()
+	{
+		RiverGridController grid = GameObject.Find ("RiverGrid").GetComponent<RiverGridController> ();
+		if (grid == null) {
+			Debug.LogError ("River grid controller is uninitialized");
+			return;
+		}
+		GameObject oldSurface = grid.surface;
+		oldSurface.SetActive (false);
+		surface0.SetActive (true);
+		grid.surface = surface0;
+		grid.GetDimensions ();
+		grid.UpdateRiverTree ();
+	}
+	public void LoadSurface1()
+	{
+		RiverGridController grid = GameObject.Find ("RiverGrid").GetComponent<RiverGridController> ();
+		if (grid == null) {
+			Debug.LogError ("River grid controller is uninitialized");
+			return;
+		}
+		GameObject oldSurface = grid.surface;
+		oldSurface.SetActive (false);
+		surface1.SetActive (true);
+		grid.surface = surface1;
+		grid.GetDimensions ();
+		grid.UpdateRiverTree ();
+	}
+	public void LoadSurface2()
+	{
+		RiverGridController grid = GameObject.Find ("RiverGrid").GetComponent<RiverGridController> ();
+		if (grid == null) {
+			Debug.LogError ("River grid controller is uninitialized");
+			return;
+		}
+		GameObject oldSurface = grid.surface;
+		oldSurface.SetActive (false);
+		surface2.SetActive (true);
+		grid.surface = surface2;
+		grid.GetDimensions ();
+		grid.UpdateRiverTree ();
+	}
+	public void LoadSurface3()
+	{
+		RiverGridController grid = GameObject.Find ("RiverGrid").GetComponent<RiverGridController> ();
+		if (grid == null) {
+			Debug.LogError ("River grid controller is uninitialized");
+			return;
+		}
+		GameObject oldSurface = grid.surface;
+		oldSurface.SetActive (false);
+		surface3.SetActive (true);
+		grid.surface = surface3;
+		grid.GetDimensions ();
+		grid.UpdateRiverTree ();
+	}
+	public void LoadSurface4()
+	{
+		RiverGridController grid = GameObject.Find ("RiverGrid").GetComponent<RiverGridController> ();
+		if (grid == null) {
+			Debug.LogError ("River grid controller is uninitialized");
+			return;
+		}
+		GameObject oldSurface = grid.surface;
+		oldSurface.SetActive (false);
+		surface4.SetActive (true);
+		grid.surface = surface4;
+		grid.GetDimensions ();
+		grid.UpdateRiverTree ();
+	}
+	public void LoadSurface5()
+	{
+		RiverGridController grid = GameObject.Find ("RiverGrid").GetComponent<RiverGridController> ();
+		if (grid == null) {
+			Debug.LogError ("River grid controller is uninitialized");
+			return;
+		}
+		GameObject oldSurface = grid.surface;
+		oldSurface.SetActive (false);
+		surface5.SetActive (true);
+		grid.surface = surface5;
+		grid.GetDimensions ();
+		grid.UpdateRiverTree ();
 	}
 
 	public void Exit()

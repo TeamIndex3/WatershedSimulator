@@ -19,16 +19,21 @@ The current functionality procedurally creates a mesh from a *.TIN file (A commo
 ##**Program**##
 
 A GUI that allows the user to select certain parameters, as well as input a raster / TIN file to be created and move the camera. 
+
 Here are two examples of FPS style camera controllers: 
 http://wiki.unity3d.com/index.php/FPSWalkerEnhanced 
 http://docs.unity3d.com/ScriptReference/CharacterController.Move.html
 <p>Unity GUI class reference: 
 http://docs.unity3d.com/Manual/UISystem.html
+
 Create a TIN from an input raster using Delaunay Triangulation(This could be omitted, it is the hardest part of the project)
 https://en.wikipedia.org/wiki/Delaunay_triangulation
 https://msdn.microsoft.com/en-us/library/system.windows.media.matrix.determinant(v=vs.110).aspx
+
 Create a terrain mesh from a TIN and load it to the scene
+
 Procedurally spawn spheres and drop them on the mesh
+
 A camera and lighting model that has nice shading
 
 
